@@ -1,0 +1,2 @@
+# RVAdapter
+RecyclerView Adapter Encapsulation
