@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference
  **/
 
 @Suppress("UNCHECKED_CAST")
-abstract class AbsAdapter<Item : GenericViewItem> : RecyclerView.Adapter<RecyclerView.ViewHolder>(), IAdapter<GenericViewItem> {
+abstract class AbsAdapter<Item : GenericViewItem> : RecyclerView.Adapter<RecyclerView.ViewHolder>(), IAdapter<Item> {
 
     protected var mContext: Context? = null
     protected val inflater: LayoutInflater by lazy { LayoutInflater.from(mContext) }
