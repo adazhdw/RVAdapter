@@ -1,6 +1,5 @@
 package com.adazhdw.adapter.core
 
-import android.content.Context
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,97 +8,110 @@ import com.adazhdw.rv.adapter.R
 import java.lang.ref.WeakReference
 
 /**
- * author：daguozhu
- * date-time：2020/12/15 9:26
- * description：继承自 RecyclerView.Adapter 抽象类
+ * author：adazhdw
+ * date-time：2020/12/18 11:00
+ * description：
  **/
-
 @Suppress("UNCHECKED_CAST")
-abstract class AbsAdapter<Item : GenericViewItem> : RecyclerView.Adapter<RecyclerView.ViewHolder>(), IAdapter<Item> {
+abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    protected var mContext: Context? = null
-    protected val inflater: LayoutInflater by lazy { LayoutInflater.from(mContext) }
     protected var recyclerView: RecyclerView? = null
-    private val defaultViewItemVHFactoryCache = DefaultItemVHFactoryCache<ItemVHFactory<*>>()
+
+    /**Sets an item factory cache to this fast adapter instance.*/
+    open var itemVHFactoryCache: ItemVHFactoryCache<IItemVHFactory<*>> = DefaultItemVHFactoryCache()
+
+    /**Sets an LayoutInflater Cache cache to this fast adapter instance.*/
     private val layoutInflaterCache: SparseArray<WeakReference<LayoutInflater>> = SparseArray()
 
-    /**
-     * Register a new type factory into the TypeInstances to be able to efficiently create thew ViewHolders
-     *
-     * @param item an Item which will be shown in the list
-     */
-    fun registerItemFactory(type: Int, item: ItemVHFactory<*>) {
-        this.defaultViewItemVHFactoryCache.register(type, item)
+    /**legacy bindView mode. if activated we will forward onBindView without payloads to the method with payloads*/
+    var legacyBindViewMode = false
+
+    abstract fun getItem(position: Int): Item?
+
+    /**Register a new type factory into the itemVHFactoryCache to be able to efficiently create thew ViewHolders*/
+    fun registerItemFactory(type: Int, itemVHF: IItemVHFactory<*>) {
+        this.itemVHFactoryCache.register(type, itemVHF)
     }
 
-    /**
-     * Gets the TypeInstance remembered within the FastAdapter for an item
-     *
-     * @param type the int type of the item
-     * @return the Item typeInstance
-     */
-    fun getItemVHFactory(type: Int): ItemVHFactory<*> {
-        return this.defaultViewItemVHFactoryCache[type]
-    }
+    /**Gets the IItemVHFactory remembered within the BaseAdapter for an item*/
+    fun getItemVHFactory(type: Int): IItemVHFactory<*> = this.itemVHFactoryCache[type]
 
-    /**
-     * Clears the internal mapper - be sure, to remap everything before going on
-     */
+    /**Clears the internal mapper - be sure, to remap everything before going on*/
     fun clearItemVHFactoryCache() {
-        this.defaultViewItemVHFactoryCache.clear()
+        this.itemVHFactoryCache.clear()
     }
 
+    /*** Creates the ViewHolder by the viewType*/
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val defaultViewHolder = this.getItemVHFactory(viewType).getViewHolder(
-            parent, layoutInflaterCache.get(0).get() ?: LayoutInflater.from(parent.context)
-        )
-        defaultViewHolder.itemView.setTag(R.id.adapter, this)
-        defaultViewHolder.itemView.setTag(R.id.adapter_recyclerView, recyclerView)
-        return defaultViewHolder
+        val holder = getItemVHFactory(viewType)
+            .getViewHolder(parent, layoutInflaterCache.get(0).get() ?: LayoutInflater.from(parent.context))
+        holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
+        return holder
     }
 
+    /*** Binds the data to the created ViewHolder and sets the listeners to the holder.itemView*/
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
-        if (position != RecyclerView.NO_POSITION) {
-            holder.itemView.setTag(R.id.adapter, this)
-            holder.itemView.setTag(R.id.adapter_recyclerView, recyclerView)
-            getItem(position).run {
-                this as ViewItem<*, RecyclerView.ViewHolder>
-                holder.itemView.setTag(R.id.adapter_item, this)
-                bindVH(holder, payloads)
+        if (legacyBindViewMode) {
+            holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
+            (getItem(position) as? IItem<*, RecyclerView.ViewHolder>)?.run {
+                holder.itemView.setTag(R.id.adapter_item, this@AbsAdapter)
+                this.bindVH(holder, listOf())
             }
         }
     }
 
+    /*** Binds the data to the created ViewHolder and sets the listeners to the holder.itemView*/
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (!legacyBindViewMode) {
+            holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
+            (getItem(position) as? IItem<*, RecyclerView.ViewHolder>)?.run {
+                holder.itemView.setTag(R.id.adapter_item, this@AbsAdapter)
+                this.bindVH(holder, listOf())
+            }
+        }
+        super.onBindViewHolder(holder, position, payloads)
+    }
+
+    /*** Finds the int ItemViewType from the IItem which exists at the given position*/
     override fun getItemViewType(position: Int): Int {
         return getItem(position)?.let {
-            if (!defaultViewItemVHFactoryCache.contains(it.itemViewType)) {
+            if (!this.itemVHFactoryCache.contains(it.itemViewType)) {
                 registerItemFactory(it.itemViewType, it)
             }
             it.itemViewType
         } ?: super.getItemViewType(position)
     }
 
+    /*** Unbinds the data to the already existing ViewHolder*/
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        holder.getViewItem<ViewItem<*, RecyclerView.ViewHolder>>()?.apply {
-            unBindVH(holder)
+        super.onViewRecycled(holder)
+        holder.getItem<IItem<*, RecyclerView.ViewHolder>>()?.run {
+            unbindVH(holder)
         }
         holder.itemView.setTag(R.id.adapter, null)
         holder.itemView.setTag(R.id.adapter_item, null)
-        holder.itemView.setTag(R.id.adapter_recyclerView, null)
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        layoutInflaterCache.append(0, WeakReference(LayoutInflater.from(recyclerView.context)))
+        super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
+        this.layoutInflaterCache.put(0, WeakReference(LayoutInflater.from(recyclerView.context)))
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        layoutInflaterCache.clear()
+        super.onDetachedFromRecyclerView(recyclerView)
         this.recyclerView = null
+        this.layoutInflaterCache.clear()
     }
-}
 
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        holder.getItem<IItem<*, RecyclerView.ViewHolder>>()?.attachToWindow(holder)
+    }
+
+    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        holder.getItem<IItem<*, RecyclerView.ViewHolder>>()?.detachFromWindow(holder)
+    }
+
+}

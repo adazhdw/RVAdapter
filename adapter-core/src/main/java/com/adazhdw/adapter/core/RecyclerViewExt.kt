@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * author：daguozhu
+ * author：adazhdw
  * date-time：2020/12/16 13:34
  * description：RecyclerView 相关的扩展方法
  **/
