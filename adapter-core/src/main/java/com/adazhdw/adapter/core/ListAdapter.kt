@@ -7,7 +7,7 @@ import androidx.annotation.IntRange
  * date-time：2020/12/18 13:41
  * description：
  **/
-open class ListAdapter: AbsAdapter<GenericItem>() {
+open class ListAdapter : AbsAdapter<GenericItem>() {
 
     private var items = mutableListOf<GenericItem>()
 
@@ -119,6 +119,42 @@ open class ListAdapter: AbsAdapter<GenericItem>() {
     fun clearData() {
         this.items.clear()
         notifyDataSetChanged()
+    }
+
+    /**
+     * 划到顶部
+     */
+    fun scrollToTop() {
+        if (this.items.isNotEmpty()) {
+            recyclerView?.scrollToPosition(0)
+        }
+    }
+
+    /**
+     * 划到底部
+     */
+    fun scrollToBottom() {
+        if (this.items.isNotEmpty()) {
+            recyclerView?.scrollToPosition(this.items.size - 1)
+        }
+    }
+
+    /**
+     * smooth划到顶部
+     */
+    fun smoothScrollToTop() {
+        if (this.items.isNotEmpty()) {
+            recyclerView?.smoothScrollToPosition(0)
+        }
+    }
+
+    /**
+     * smooth划到底部
+     */
+    fun smoothScrollToBottom() {
+        if (this.items.isNotEmpty()) {
+            recyclerView?.smoothScrollToPosition(this.items.size - 1)
+        }
     }
 
 }
