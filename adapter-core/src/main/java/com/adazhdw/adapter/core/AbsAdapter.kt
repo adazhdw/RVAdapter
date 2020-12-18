@@ -54,7 +54,7 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
         if (legacyBindViewMode) {
             holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
             (getItem(position) as? IItem<*, RecyclerView.ViewHolder>)?.run {
-                holder.itemView.setTag(R.id.adapter_item, this@AbsAdapter)
+                holder.itemView.setTag(R.id.adapter_item, this)
                 this.bindVH(holder, listOf())
             }
         }
@@ -65,7 +65,7 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
         if (!legacyBindViewMode) {
             holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
             (getItem(position) as? IItem<*, RecyclerView.ViewHolder>)?.run {
-                holder.itemView.setTag(R.id.adapter_item, this@AbsAdapter)
+                holder.itemView.setTag(R.id.adapter_item, this)
                 this.bindVH(holder, listOf())
             }
         }
