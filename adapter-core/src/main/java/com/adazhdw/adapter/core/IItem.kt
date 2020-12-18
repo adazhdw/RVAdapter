@@ -11,7 +11,7 @@ typealias GenericItem = IItem<*, out RecyclerView.ViewHolder>
 /**
  * Created by mikepenz on 03.02.15.
  */
-interface IItem<M, VH : RecyclerView.ViewHolder> : IItemVHFactory<VH> {
+interface IItem<M:Any, VH : RecyclerView.ViewHolder> : IItemVHFactory<VH> {
 
     /** the item data Model*/
     var data: M?
@@ -26,7 +26,7 @@ interface IItem<M, VH : RecyclerView.ViewHolder> : IItemVHFactory<VH> {
     val layoutRes: Int
 
     /** Binds the data of this item to the given holder */
-    fun bindVH(holder: VH, payloads: List<M>)
+    fun bindVH(holder: VH, payloads: List<Any>)
 
     /** View needs to release resources when its recycled */
     fun unbindVH(holder: VH)

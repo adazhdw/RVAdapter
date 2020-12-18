@@ -55,6 +55,9 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
             holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
             (getItem(position) as? IItem<*, RecyclerView.ViewHolder>)?.run {
                 holder.itemView.setTag(R.id.adapter_item, this)
+                if (holder is VHSubscriber) {
+                    holder.onBindViewHolder(position, listOf())
+                }
                 this.bindVH(holder, listOf())
             }
         }
@@ -66,7 +69,10 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
             holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
             (getItem(position) as? IItem<*, RecyclerView.ViewHolder>)?.run {
                 holder.itemView.setTag(R.id.adapter_item, this)
-                this.bindVH(holder, listOf())
+                if (holder is VHSubscriber) {
+                    holder.onBindViewHolder(position, payloads)
+                }
+                this.bindVH(holder, payloads)
             }
         }
         super.onBindViewHolder(holder, position, payloads)
@@ -85,6 +91,9 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
     /*** Unbinds the data to the already existing ViewHolder*/
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
+        if (holder is VHSubscriber) {
+            holder.unBindViewHolder(holder.adapterPosition)
+        }
         holder.getItem<IItem<*, RecyclerView.ViewHolder>>()?.run {
             unbindVH(holder)
         }
@@ -106,11 +115,17 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
+        if (holder is VHSubscriber) {
+            holder.onViewAttachedToWindow(holder, holder.adapterPosition)
+        }
         holder.getItem<IItem<*, RecyclerView.ViewHolder>>()?.attachToWindow(holder)
     }
 
     override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
         super.onViewDetachedFromWindow(holder)
+        if (holder is VHSubscriber) {
+            holder.onViewDetachedFromWindow(holder, holder.adapterPosition)
+        }
         holder.getItem<IItem<*, RecyclerView.ViewHolder>>()?.detachFromWindow(holder)
     }
 

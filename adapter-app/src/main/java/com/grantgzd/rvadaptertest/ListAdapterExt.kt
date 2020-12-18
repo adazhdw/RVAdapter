@@ -1,7 +1,6 @@
 package com.grantgzd.rvadaptertest
 
 import android.widget.TextView
-import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.core.defaultItem
 import com.adazhdw.adapter.core.getItemData
 
@@ -13,9 +12,12 @@ import com.adazhdw.adapter.core.getItemData
 
 data class HomeModel(val msg: String)
 
-fun homeModel(model: HomeModel): DefaultItem<HomeModel> =
+fun homeModel(model: HomeModel) =
     defaultItem(R.layout.item_home_model, model, {
-        val data = getItemData<HomeModel>()
-        getView<TextView>(R.id.tv).text = (data?.msg + adapterPosition)
+        val text = getView<TextView>(R.id.tv)
+        onBindViewHolder{
+            val data = getItemData<HomeModel>()
+            text.text = (data?.msg + adapterPosition)
+        }
     })
 
