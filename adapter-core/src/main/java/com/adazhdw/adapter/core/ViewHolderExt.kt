@@ -1,3 +1,4 @@
+@file:Suppress("UNCHECKED_CAST")
 package com.adazhdw.adapter.core
 
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,10 @@ fun RecyclerView.ViewHolder.getRecyclerView(): RecyclerView? {
 
 inline fun <reified VI : IItem<*, *>> RecyclerView.ViewHolder.getItem(): VI? {
     return itemView.getTag(R.id.adapter_item) as VI?
+}
+
+inline fun <reified M> RecyclerView.ViewHolder.getItemData(): M? {
+    return (itemView.getTag(R.id.adapter_item) as? IItem<M, *>)?.data
 }
 
 typealias ViewHolderType = DefaultViewHolder.() -> Unit
