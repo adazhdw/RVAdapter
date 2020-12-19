@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         listAdapter.bind(binding.recyclerview)
         binding.add.setOnClickListener {
-            listAdapter.addData(homeModel(HomeModel("msg----")))
+            listAdapter.addData(homeBindModel(HomeModel("msg----")))
             listAdapter.scrollToBottom()
         }
         val list = mutableListOf<DefaultItem<HomeModel>>().apply {

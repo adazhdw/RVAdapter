@@ -1,0 +1,25 @@
+package com.adazhdw.adapter.binding
+
+import androidx.annotation.LayoutRes
+import androidx.databinding.ViewDataBinding
+import com.adazhdw.adapter.core.DefaultViewHolder
+
+/**
+ * author：adazhdw
+ * date-time：2020/12/19 10:12
+ * description：DataBinding Adpater相关扩展方法
+ **/
+
+inline fun <M : Any> defaultBindingItem(
+    @LayoutRes layoutRes: Int,
+    data: M,
+    crossinline bind: DefaultViewHolder.() -> Unit
+) = DataBindingItem<M>(layoutRes).apply {
+    this.data = data
+    onGetViewHolder {
+        bind.invoke(this)
+    }
+}
+
+
+
