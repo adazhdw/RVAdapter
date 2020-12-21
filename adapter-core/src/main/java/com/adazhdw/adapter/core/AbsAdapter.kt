@@ -18,7 +18,7 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
     protected var recyclerView: RecyclerView? = null
 
     /**Sets an item factory cache to this fast adapter instance.*/
-    open var itemVHFactoryCache: ItemVHFactoryCache<IItemVHFactory<*>> = ItemVHFactoryCacheDefault()
+    open var itemVHFactoryCache: ItemVHFactoryCache<IItemVHFactory<*>> = DefaultItemVHFactoryCache()
 
     /**Sets an LayoutInflater Cache cache to this fast adapter instance.*/
     private val layoutInflaterCache: SparseArray<WeakReference<LayoutInflater>> = SparseArray()

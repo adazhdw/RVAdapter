@@ -8,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
  * date-time：2020/12/21 10:18
  * description：
  **/
-
-open class ViewHolderDefault(itemView: View) : ViewHolderBase(itemView), VHSubscriber {
+open class DefaultViewHolder(itemView: View) : ViewHolderBase(itemView), VHSubscriber {
 
     private var bindView: ViewHolderBindView? = null
     private var unBindType: ViewHolderType? = null
@@ -41,11 +40,11 @@ open class ViewHolderDefault(itemView: View) : ViewHolderBase(itemView), VHSubsc
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder, position: Int) {
-        this.attachType?.invoke(holder as ViewHolderDefault)
+        this.attachType?.invoke(holder as DefaultViewHolder)
     }
 
     override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder, position: Int) {
-        this.detachType?.invoke(holder as ViewHolderDefault)
+        this.detachType?.invoke(holder as DefaultViewHolder)
     }
 }
 

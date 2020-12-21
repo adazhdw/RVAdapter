@@ -15,7 +15,7 @@ inline fun listAdapter(block: ListAdapter.() -> Unit): ListAdapter {
 inline fun <M : Any> defaultItem(
     @LayoutRes layoutRes: Int,
     model: M,
-    crossinline bind: ViewHolderDefault.() -> Unit
+    crossinline bind: DefaultViewHolder.() -> Unit
 ) = DefaultItem<M>(layoutRes).apply {
     this.data = model
     onGetViewHolder {

@@ -1,7 +1,7 @@
 package com.adazhdw.adapter.binding
 
 import androidx.annotation.LayoutRes
-import com.adazhdw.adapter.core.ViewHolderDefault
+import com.adazhdw.adapter.core.DefaultViewHolder
 
 /**
  * author：adazhdw
@@ -12,7 +12,7 @@ import com.adazhdw.adapter.core.ViewHolderDefault
 inline fun <M : Any> defaultBindingItem(
     @LayoutRes layoutRes: Int,
     data: M,
-    crossinline bind: ViewHolderDefault.() -> Unit
+    crossinline bind: DefaultViewHolder.() -> Unit
 ) = DataBindingItem<M>(layoutRes).apply {
     this.data = data
     onGetViewHolder {
