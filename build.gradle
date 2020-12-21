@@ -21,6 +21,7 @@ buildscript {
 allprojects {
     repositories {
         google()
+        maven { url 'https://jitpack.io' }
         maven { url"http://jcenter.bintray.com"}
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         jcenter()
