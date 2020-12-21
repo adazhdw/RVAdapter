@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
  * date-time：2020/12/18 15:42
  * description：
  **/
-open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+open class ViewHolderBase(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val views: SparseArray<View> = SparseArray()
 
@@ -36,64 +36,64 @@ open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         return view as? T
     }
 
-    open fun setText(@IdRes viewId: Int, value: CharSequence?): BaseViewHolder {
+    open fun setText(@IdRes viewId: Int, value: CharSequence?): ViewHolderBase {
         getView<TextView>(viewId).text = value
         return this
     }
 
-    open fun setText(@IdRes viewId: Int, @StringRes strId: Int): BaseViewHolder {
+    open fun setText(@IdRes viewId: Int, @StringRes strId: Int): ViewHolderBase {
         getView<TextView>(viewId).setText(strId)
         return this
     }
 
-    open fun setTextColor(@IdRes viewId: Int, @ColorInt color: Int): BaseViewHolder {
+    open fun setTextColor(@IdRes viewId: Int, @ColorInt color: Int): ViewHolderBase {
         getView<TextView>(viewId).setTextColor(color)
         return this
     }
 
-    open fun setTextColorRes(@IdRes viewId: Int, @ColorRes colorRes: Int): BaseViewHolder {
+    open fun setTextColorRes(@IdRes viewId: Int, @ColorRes colorRes: Int): ViewHolderBase {
         getView<TextView>(viewId).setTextColor(itemView.resources.getColor(colorRes))
         return this
     }
 
-    open fun setImageResource(@IdRes viewId: Int, @DrawableRes imageResId: Int): BaseViewHolder {
+    open fun setImageResource(@IdRes viewId: Int, @DrawableRes imageResId: Int): ViewHolderBase {
         getView<ImageView>(viewId).setImageResource(imageResId)
         return this
     }
 
-    open fun setImageDrawable(@IdRes viewId: Int, drawable: Drawable?): BaseViewHolder {
+    open fun setImageDrawable(@IdRes viewId: Int, drawable: Drawable?): ViewHolderBase {
         getView<ImageView>(viewId).setImageDrawable(drawable)
         return this
     }
 
-    open fun setImageBitmap(@IdRes viewId: Int, bitmap: Bitmap?): BaseViewHolder {
+    open fun setImageBitmap(@IdRes viewId: Int, bitmap: Bitmap?): ViewHolderBase {
         getView<ImageView>(viewId).setImageBitmap(bitmap)
         return this
     }
 
-    open fun setBackgroundColor(@IdRes viewId: Int, @ColorInt color: Int): BaseViewHolder {
+    open fun setBackgroundColor(@IdRes viewId: Int, @ColorInt color: Int): ViewHolderBase {
         getView<View>(viewId).setBackgroundColor(color)
         return this
     }
 
-    open fun setBackgroundResource(@IdRes viewId: Int, @DrawableRes backgroundRes: Int): BaseViewHolder {
+    open fun setBackgroundResource(@IdRes viewId: Int, @DrawableRes backgroundRes: Int): ViewHolderBase {
         getView<View>(viewId).setBackgroundResource(backgroundRes)
         return this
     }
 
-    open fun setVisible(@IdRes viewId: Int, isVisible: Boolean): BaseViewHolder {
+    open fun setVisible(@IdRes viewId: Int, isVisible: Boolean): ViewHolderBase {
         val view = getView<View>(viewId)
         view.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
         return this
     }
 
-    open fun setGone(@IdRes viewId: Int, isGone: Boolean): BaseViewHolder {
+    open fun setGone(@IdRes viewId: Int, isGone: Boolean): ViewHolderBase {
         val view = getView<View>(viewId)
         view.visibility = if (isGone) View.GONE else View.VISIBLE
         return this
     }
 
-    open fun setEnabled(@IdRes viewId: Int, isEnabled: Boolean): BaseViewHolder {
+    open fun setEnabled(@IdRes viewId: Int, isEnabled: Boolean): ViewHolderBase {
         getView<View>(viewId).isEnabled = isEnabled
         return this
     }

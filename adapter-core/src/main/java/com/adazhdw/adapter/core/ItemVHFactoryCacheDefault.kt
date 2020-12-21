@@ -8,7 +8,7 @@ import android.util.SparseArray
  * description：The default implementation to cache the viewholder factories.
  **/
 
-class DefaultItemVHFactoryCache<ItemVHFactory : GenericItemVHFactory> : ItemVHFactoryCache<ItemVHFactory> {
+class ItemVHFactoryCacheDefault<ItemVHFactory : GenericItemVHFactory> : ItemVHFactoryCache<ItemVHFactory> {
 
     // we remember all possible types so we can create a new view efficiently
     private val factoryArray = SparseArray<ItemVHFactory>()

@@ -14,7 +14,7 @@ import androidx.annotation.LayoutRes
 /**
  * Implements the general methods of the IItem interface to speed up development.
  */
-abstract class AbsItem<M : Any> : IItem<M, DefaultViewHolder> {
+abstract class AbsItem<M : Any> : IItem<M, ViewHolderDefault> {
 
     override var data: M? = null
     private var initViewHolder: ViewHolderType? = null
@@ -26,7 +26,7 @@ abstract class AbsItem<M : Any> : IItem<M, DefaultViewHolder> {
     /**
      * This method returns the ViewHolder for our item, using the provided parent and layoutInflater.
      */
-    override fun getViewHolder(parent: ViewGroup, layoutInflater: LayoutInflater): DefaultViewHolder {
+    override fun getViewHolder(parent: ViewGroup, layoutInflater: LayoutInflater): ViewHolderDefault {
         return getViewHolder(getItemView(parent, layoutInflater)).apply { initViewHolder?.invoke(this) }
     }
 
@@ -38,23 +38,23 @@ abstract class AbsItem<M : Any> : IItem<M, DefaultViewHolder> {
     /**
      * This method returns the ViewHolder for our item, using the provided View.
      */
-    open fun getViewHolder(view: View): DefaultViewHolder {
-        return DefaultViewHolder(view)
+    open fun getViewHolder(view: View): ViewHolderDefault {
+        return ViewHolderDefault(view)
     }
 
-    override fun bindVH(holder: DefaultViewHolder, payloads: List<Any>) {
-
-    }
-
-    override fun unbindVH(holder: DefaultViewHolder) {
+    override fun bindVH(holder: ViewHolderDefault, payloads: List<Any>) {
 
     }
 
-    override fun attachToWindow(holder: DefaultViewHolder) {
+    override fun unbindVH(holder: ViewHolderDefault) {
 
     }
 
-    override fun detachFromWindow(holder: DefaultViewHolder) {
+    override fun attachToWindow(holder: ViewHolderDefault) {
+
+    }
+
+    override fun detachFromWindow(holder: ViewHolderDefault) {
 
     }
 }
