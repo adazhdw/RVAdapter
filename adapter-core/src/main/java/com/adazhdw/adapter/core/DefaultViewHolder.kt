@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
  * date-time：2020/12/21 10:18
  * description：
  **/
-open class DefaultViewHolder(itemView: View) : ViewHolderBase(itemView), VHSubscriber {
+open class DefaultViewHolder(itemView: View) : BaseViewHolder(itemView), VHSubscriber {
 
     private var bindView: ViewHolderBindView? = null
     private var unBindType: ViewHolderType? = null

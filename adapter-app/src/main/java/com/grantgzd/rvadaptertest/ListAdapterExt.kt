@@ -27,7 +27,7 @@ fun homeModel(model: HomeModel) =
 fun homeBindModel(model: HomeModel) =
     defaultBindingItem(R.layout.item_home_model_binding, model, {
         onBindViewHolder {
-            val binding = this.getDataBinding() as ItemHomeModelBindingBinding
+            val binding = this.getDataBinding<ItemHomeModelBindingBinding>()
             val data = getItemData<HomeModel>()
             binding.tv.text = (data?.msg + adapterPosition)
         }
