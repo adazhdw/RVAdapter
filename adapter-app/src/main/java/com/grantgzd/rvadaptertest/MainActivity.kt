@@ -5,29 +5,41 @@ import androidx.appcompat.app.AppCompatActivity
 import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.core.bind
 import com.adazhdw.adapter.core.listAdapter
+import com.adazhdw.adapter.loadmore.defaultLoadMoreListener
+import com.adazhdw.adapter.loadmore.loadMoreAdapter
 import com.grantgzd.rvadaptertest.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private val binding: ActivityMainBinding by inflate()
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val listAdapter = listAdapter {
-//            addData(homeModel(HomeModel("msg----")))
+            addData(homeModel(HomeModel("msg----")))
         }
+        val loadMoreAdapter = loadMoreAdapter(listAdapter)
 
-        listAdapter.bind(binding.recyclerview)
+        loadMoreAdapter.bind(binding.recyclerview)
         binding.add.setOnClickListener {
             listAdapter.addData(homeBindModel(HomeModel("msg----")))
             listAdapter.scrollToBottom()
         }
         val list = mutableListOf<DefaultItem<HomeModel>>().apply {
-            for (i in 0..10) {
+            for (i in 0..5) {
                 add(homeModel(HomeModel("msg----")))
             }
         }
         listAdapter.addData(list)
+
+        //加载更多
+        binding.recyclerview.defaultLoadMoreListener {
+            binding.recyclerview.postDelayed({
+                listAdapter.addData(list)
+                loadMoreAdapter.loadComplete(hasMore = listAdapter.getData().size < 20)
+            }, 1000)
+        }
     }
 }

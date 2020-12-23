@@ -1,3 +1,4 @@
+include ':adapter-loadmore'
 include ':adapter-binding'
 include ':adapter-core'
 include ':adapter-app'
