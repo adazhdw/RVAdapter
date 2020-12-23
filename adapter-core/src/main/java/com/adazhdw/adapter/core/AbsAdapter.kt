@@ -1,5 +1,6 @@
 package com.adazhdw.adapter.core
 
+import android.content.Context
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -41,10 +42,12 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
         this.itemVHFactoryCache.clear()
     }
 
+    /**Gets LayoutInflater*/
+    protected fun getLayoutInflater(context: Context): LayoutInflater = layoutInflaterCache.get(0).get() ?: LayoutInflater.from(context)
+
     /*** Creates the ViewHolder by the viewType*/
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val holder = getItemVHFactory(viewType)
-            .getViewHolder(parent, layoutInflaterCache.get(0).get() ?: LayoutInflater.from(parent.context))
+        val holder = getItemVHFactory(viewType).getViewHolder(parent, getLayoutInflater(parent.context))
         holder.itemView.setTag(R.id.adapter, this@AbsAdapter)
         return holder
     }
