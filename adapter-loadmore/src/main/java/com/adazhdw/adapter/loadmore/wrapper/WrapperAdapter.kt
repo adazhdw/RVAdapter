@@ -1,7 +1,7 @@
 package com.adazhdw.adapter.loadmore.wrapper
 
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.adazhdw.adapter.core.IItem
 import java.lang.ref.WeakReference
 
 /**
@@ -9,64 +9,28 @@ import java.lang.ref.WeakReference
  * date-time：2020/12/23 14:12
  * description：
  **/
-open class WrapperAdapter<VH : RecyclerView.ViewHolder>(private val adapter: RecyclerView.Adapter<VH>) : RecyclerView.Adapter<VH>(),
+open class WrapperAdapter<Item : IItem<*, VH>, VH : RecyclerView.ViewHolder>(adapter: RecyclerView.Adapter<VH>) :
+    AbsWrapperAdapter<Item, VH>(adapter),
     WrapperAdapterDataObserver.Subscriber {
 
     init {
-        val observer = WrapperAdapterDataObserver(WeakReference(this), WeakReference(adapter))
-        adapter.registerAdapterDataObserver(observer)
-        super.setHasStableIds(adapter.hasStableIds())
+        registerDataObserver()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return adapter.onCreateViewHolder(parent, viewType)
+    private fun registerDataObserver() {
+        val observer = WrapperAdapterDataObserver(WeakReference(this), WeakReference(getRealAdapter()))
+        getRealAdapter().registerAdapterDataObserver(observer)
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        onBindViewHolder(holder, position, mutableListOf())
-    }
+    override var insertItems: List<Item> = emptyList()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
-    override fun onBindViewHolder(holder: VH, position: Int, payloads: MutableList<Any>) {
-        adapter.onBindViewHolder(holder, position, payloads)
-    }
+    override fun shouldInsertItemAtPosition(position: Int): Boolean = false
 
-    override fun getItemCount(): Int = adapter.itemCount
-
-    override fun getItemId(position: Int): Long {
-        return adapter.getItemId(position)
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return adapter.getItemViewType(position)
-    }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        adapter.onAttachedToRecyclerView(recyclerView)
-    }
-
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        adapter.onDetachedFromRecyclerView(recyclerView)
-    }
-
-    override fun onViewAttachedToWindow(holder: VH) {
-        adapter.onViewAttachedToWindow(holder)
-    }
-
-    override fun onViewDetachedFromWindow(holder: VH) {
-        adapter.onViewDetachedFromWindow(holder)
-    }
-
-    override fun onViewRecycled(holder: VH) {
-        adapter.onViewRecycled(holder)
-    }
-
-    override fun onFailedToRecycleView(holder: VH): Boolean {
-        return adapter.onFailedToRecycleView(holder)
-    }
-
-    fun getRealAdapter(): RecyclerView.Adapter<VH> {
-        return adapter
-    }
+    override fun itemInsertedBeforeCount(position: Int): Int = 0
 
     /**
      * 注册之后，会在adapter调用notifyXXX的时候，调用WrapperAdapter的notifyXXX

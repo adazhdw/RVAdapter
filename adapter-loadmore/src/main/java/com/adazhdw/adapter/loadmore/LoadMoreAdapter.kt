@@ -1,9 +1,6 @@
 package com.adazhdw.adapter.loadmore
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.adazhdw.adapter.core.DefaultViewHolder
 import com.adazhdw.adapter.core.IItem
 import com.adazhdw.adapter.loadmore.wrapper.WrapperAdapter
 
@@ -14,32 +11,25 @@ import com.adazhdw.adapter.loadmore.wrapper.WrapperAdapter
  **/
 class LoadMoreAdapter(
     adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-    private val loadMoreItem: IItem<LoadMoreState, DefaultViewHolder> = LoadMoreItemDefault(),
+    private val loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItemDefault(),
     override val loadMoreEnabled: Boolean = true
-) : WrapperAdapter<RecyclerView.ViewHolder>(adapter), ILoadMore {
+) : WrapperAdapter<LoadMoreItemDefault, RecyclerView.ViewHolder>(adapter), ILoadMore {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == loadMoreItem.itemViewType) {
-            return loadMoreItem.getViewHolder(parent, LayoutInflater.from(parent.context))
-        }
-        return super.onCreateViewHolder(parent, viewType)
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
-        if (isLoadMoreItem(position)) {
-            loadMoreItem.bindVH(holder as DefaultViewHolder, payloads)
-        } else {
-            super.onBindViewHolder(holder, position, payloads)
-        }
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        if (isLoadMoreItem(position)) return loadMoreItem.itemViewType
-        return super.getItemViewType(position)
+    init {
+        if (loadMoreEnabled) insertItems = listOf(loadMoreItem as LoadMoreItemDefault)
     }
 
     override fun getItemCount(): Int {
         return getRealAdapter().itemCount + if (loadMoreEnabled) 1 else 0
+    }
+
+    override fun shouldInsertItemAtPosition(position: Int): Boolean {
+        return isLoadMoreItem(position)
+    }
+
+    override fun itemInsertedBeforeCount(position: Int): Int {
+        if (isLoadMoreItem(position)) return 0
+        return super.itemInsertedBeforeCount(position)
     }
 
     private fun isLoadMoreItem(position: Int): Boolean {

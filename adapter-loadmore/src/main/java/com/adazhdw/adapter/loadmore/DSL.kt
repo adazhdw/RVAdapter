@@ -14,6 +14,6 @@ import com.adazhdw.adapter.core.IItem
 
 fun loadMoreAdapter(
     adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-    loadMoreItem: IItem<LoadMoreState, DefaultViewHolder> = LoadMoreItemDefault(),
+    loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItemDefault(),
     loadMoreEnabled: Boolean = true
 ) = LoadMoreAdapter(adapter, loadMoreItem, loadMoreEnabled)
