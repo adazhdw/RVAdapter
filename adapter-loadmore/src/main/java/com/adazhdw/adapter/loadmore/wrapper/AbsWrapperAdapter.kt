@@ -52,7 +52,8 @@ abstract class AbsWrapperAdapter<Item : IItem<*, VH>, VH : RecyclerView.ViewHold
     }
 
     override fun getItemCount(): Int {
-        return adapter.itemCount + insertItems.size
+        val itemCount = adapter.itemCount
+        return itemCount + itemInsertedBeforeCount(itemCount)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -64,7 +65,7 @@ abstract class AbsWrapperAdapter<Item : IItem<*, VH>, VH : RecyclerView.ViewHold
 
     private fun getInsertItem(position: Int): Item? {
         if (shouldInsertItemAtPosition(position))
-            return insertItems[itemInsertedBeforeCount(position)]
+            return insertItems[itemInsertedBeforeCount(position - 1)]
         return null
     }
 

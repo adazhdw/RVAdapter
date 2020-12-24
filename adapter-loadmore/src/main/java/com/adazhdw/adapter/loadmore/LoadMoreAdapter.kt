@@ -28,8 +28,8 @@ class LoadMoreAdapter(
     }
 
     override fun itemInsertedBeforeCount(position: Int): Int {
-        if (isLoadMoreItem(position)) return 0
-        return super.itemInsertedBeforeCount(position)
+        if (isLoadMoreItem(position)) return 1
+        return 0
     }
 
     private fun isLoadMoreItem(position: Int): Boolean {
