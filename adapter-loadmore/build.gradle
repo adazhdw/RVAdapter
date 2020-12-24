@@ -1,7 +1,5 @@
-plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 30
@@ -41,3 +39,5 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
 
 }
+
+apply from: '../jitpack.gradle'
