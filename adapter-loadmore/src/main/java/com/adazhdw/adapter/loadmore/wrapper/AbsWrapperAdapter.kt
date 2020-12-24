@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.adazhdw.adapter.core.IItem
 import java.lang.ref.WeakReference
@@ -71,6 +72,14 @@ abstract class AbsWrapperAdapter<Item : IItem<*, VH>, VH : RecyclerView.ViewHold
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         adapter.onAttachedToRecyclerView(recyclerView)
+        val layoutManager = recyclerView.layoutManager
+        if (layoutManager is GridLayoutManager) {
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (shouldInsertItemAtPosition(position)) layoutManager.spanCount else 1
+                }
+            }
+        }
         layoutInflaterCache.put(0, WeakReference(LayoutInflater.from(recyclerView.context)))
     }
 

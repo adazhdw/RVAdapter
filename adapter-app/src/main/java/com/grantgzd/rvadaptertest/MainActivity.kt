@@ -2,6 +2,7 @@ package com.grantgzd.rvadaptertest
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.core.bind
 import com.adazhdw.adapter.core.listAdapter
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         }
         val loadMoreAdapter = loadMoreAdapter(listAdapter)
 
-        loadMoreAdapter.bind(binding.recyclerview)
+        loadMoreAdapter.bind(binding.recyclerview, GridLayoutManager(this, 2))
         binding.add.setOnClickListener {
             listAdapter.addData(homeBindModel(HomeModel("msg----")))
             listAdapter.scrollToBottom()
