@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * author：adazhdw
@@ -14,7 +15,7 @@ import androidx.annotation.LayoutRes
 /**
  * Implements the general methods of the IItem interface to speed up development.
  */
-abstract class AbsItem<M : Any> : IItem<M, DefaultViewHolder> {
+abstract class AbsItem<M : Any, VH : RecyclerView.ViewHolder> : IItem<M, VH> {
 
     override var data: M? = null
     private var initViewHolder: ViewHolderType? = null
@@ -26,8 +27,10 @@ abstract class AbsItem<M : Any> : IItem<M, DefaultViewHolder> {
     /**
      * This method returns the ViewHolder for our item, using the provided parent and layoutInflater.
      */
-    override fun getViewHolder(parent: ViewGroup, layoutInflater: LayoutInflater): DefaultViewHolder {
-        return getViewHolder(getItemView(parent, layoutInflater)).apply { initViewHolder?.invoke(this) }
+    override fun getViewHolder(parent: ViewGroup, layoutInflater: LayoutInflater): VH {
+        return getViewHolder(getItemView(parent, layoutInflater)).apply {
+            if (this is DefaultViewHolder) initViewHolder?.invoke(this)
+        }
     }
 
     /**
@@ -38,23 +41,21 @@ abstract class AbsItem<M : Any> : IItem<M, DefaultViewHolder> {
     /**
      * This method returns the ViewHolder for our item, using the provided View.
      */
-    open fun getViewHolder(view: View): DefaultViewHolder {
-        return DefaultViewHolder(view)
-    }
+    abstract fun getViewHolder(view: View): VH
 
-    override fun bindVH(holder: DefaultViewHolder, payloads: List<Any>) {
+    override fun bindVH(holder: VH, payloads: List<Any>) {
 
     }
 
-    override fun unbindVH(holder: DefaultViewHolder) {
+    override fun unbindVH(holder: VH) {
 
     }
 
-    override fun attachToWindow(holder: DefaultViewHolder) {
+    override fun attachToWindow(holder: VH) {
 
     }
 
-    override fun detachFromWindow(holder: DefaultViewHolder) {
+    override fun detachFromWindow(holder: VH) {
 
     }
 }
@@ -62,10 +63,14 @@ abstract class AbsItem<M : Any> : IItem<M, DefaultViewHolder> {
 /**
  * implements a default item by using a default RecyclerView.ViewHolder
  */
-open class DefaultItem<M : Any>(@LayoutRes override val layoutRes: Int) : AbsItem<M>() {
+open class DefaultItem<M : Any>(@LayoutRes override val layoutRes: Int) : AbsItem<M, DefaultViewHolder>() {
 
     override fun getItemView(parent: ViewGroup, layoutInflater: LayoutInflater): View {
         return layoutInflater.inflate(layoutRes, parent, false)
+    }
+
+    override fun getViewHolder(view: View): DefaultViewHolder {
+        return DefaultViewHolder(view)
     }
 }
 

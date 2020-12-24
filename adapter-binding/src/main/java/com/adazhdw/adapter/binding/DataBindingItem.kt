@@ -14,7 +14,7 @@ import com.adazhdw.adapter.core.DefaultViewHolder
  * description：
  **/
 
-class DataBindingItem<M : Any>(override val layoutRes: Int) : AbsItem<M>() {
+class DataBindingItem<M : Any>(override val layoutRes: Int) : AbsItem<M, DefaultViewHolder>() {
     override fun getItemView(parent: ViewGroup, layoutInflater: LayoutInflater): View {
         val binding = DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, layoutRes, parent, false)
         val view = binding.root
@@ -28,6 +28,10 @@ class DataBindingItem<M : Any>(override val layoutRes: Int) : AbsItem<M>() {
 
     override fun unbindVH(holder: DefaultViewHolder) {
         holder.getDataBinding<ViewDataBinding>().unbind()
+    }
+
+    override fun getViewHolder(view: View): DefaultViewHolder {
+        return DefaultViewHolder(view)
     }
 
 }
