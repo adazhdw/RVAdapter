@@ -109,7 +109,7 @@ class LoadMoreRecyclerView : RecyclerView {
                 if (itemCount == lastVisiblePosition + 1) canLoadMore = true
             }
         }
-        if (loadMoreAvailable && canLoadMore && state == SCROLL_STATE_IDLE && alreadyTopOrBottom() && !isLoading) {
+        if (loadMoreAvailable && canLoadMore && state == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
             val adapter = adapter ?: return
             if (adapter is ILoadMore && adapter.loadMoreEnabled && !adapter.isLoading && !adapter.noMore) {
                 adapter.loading()

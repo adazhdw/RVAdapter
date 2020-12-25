@@ -40,7 +40,7 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
 
     override fun initView(view: View) {
         viewBinding.swipe.isEnabled = refreshEnabled()
-        viewBinding.swipe.setOnRefreshListener { requestStart() }
+        viewBinding.swipe.setOnRefreshListener { refresh() }
         viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.layoutManager = getLayoutManager()
         viewBinding.dataRV.addItemDecoration(itemDecoration())
@@ -70,11 +70,13 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
             currPage = startAtPage()
             viewBinding.dataRV.setLoadMoreEnabled(false)
         } else {
+            viewBinding.swipe.isEnabled = false
             viewBinding.dataRV.setLoadMoreEnabled(true)
         }
         onLoad(currPage, object : LoadDataCallback<Item> {
             override fun onSuccess(data: List<Item>, hasMore: Boolean) {
-                viewBinding.swipe.isRefreshing = false
+                viewBinding.swipe.isEnabled = refreshEnabled()
+                if (refreshing) viewBinding.swipe.isRefreshing = false
                 viewBinding.dataRV.loadComplete()
                 if (data.isNotEmpty()) currPage += 1
                 if (refreshing) {
@@ -89,6 +91,7 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
             }
 
             override fun onFail(code: Int, msg: String?) {
+                viewBinding.swipe.isEnabled = refreshEnabled()
                 if (refreshing) viewBinding.swipe.isRefreshing = false
                 viewBinding.swipe.isRefreshing = false
                 viewBinding.dataRV.loadComplete()

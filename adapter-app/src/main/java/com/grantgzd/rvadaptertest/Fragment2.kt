@@ -27,15 +27,15 @@ class Fragment2 : ViewBindingFragment() {
     }
 
     override fun initView(view: View) {
-        childFragmentManager.beginTransaction().add(R.id.container, ListExampleFragment()).commit()
+        val listFragment = ListExampleFragment()
+        pagerItem1Binding.refresh.setOnClickListener { listFragment.refresh() }
+        childFragmentManager.beginTransaction().add(R.id.container, listFragment).commit()
     }
 }
 
 class ListExampleFragment : ListFragment<DefaultItem<HomeModel>>() {
 
-    override fun refreshEnabled(): Boolean {
-        return false
-    }
+    override fun refreshEnabled(): Boolean = true
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -46,7 +46,7 @@ class ListExampleFragment : ListFragment<DefaultItem<HomeModel>>() {
                     add(homeModel(HomeModel("msg----")))
                 }
             }
-            callback.onSuccess(list, if (isRefreshing) true else mData.size + list.size < 20)
+            callback.onSuccess(list, if (isRefreshing) true else mData.size + list.size < 10)
         }, 1000)
     }
 
