@@ -39,3 +39,5 @@ dependencies {
     implementation project(path: ':adapter-core')
     implementation project(path: ':adapter-loadmore')
 }
+
+apply from: '../jitpack.gradle'
