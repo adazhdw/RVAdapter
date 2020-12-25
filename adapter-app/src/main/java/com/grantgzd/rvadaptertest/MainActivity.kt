@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             listAdapter.scrollToBottom()
         }
         val list = mutableListOf<DefaultItem<HomeModel>>().apply {
-            for (i in 0..5) {
+            for (i in 0 until 5) {
                 add(homeModel(HomeModel("msg----")))
             }
         }

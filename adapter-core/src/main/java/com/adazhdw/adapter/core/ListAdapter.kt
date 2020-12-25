@@ -49,7 +49,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
      * 设置某一条为新数据
      */
     fun setData(@IntRange(from = 0) index: Int, items: GenericItem) {
-        if (index >= this.items.size) return
+        if (index >= this.itemCount) return
         this.items[index] = items
         notifyItemChanged(index)
     }
@@ -59,7 +59,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
      */
     fun addData(items: GenericItem): Boolean {
         val result = this.items.add(items)
-        notifyItemInserted(this.items.size)
+        notifyItemInserted(this.itemCount)
         return result
     }
 
@@ -79,7 +79,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
      * 插入一条数据
      */
     fun addData(@IntRange(from = 0) index: Int, items: GenericItem) {
-        if (index >= this.items.size) return
+        if (index >= this.itemCount) return
         this.items.add(index, items)
         notifyItemInserted(index)
     }
@@ -88,7 +88,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
      * 插入列表数据
      */
     fun addData(@IntRange(from = 0) index: Int, items: Collection<GenericItem>): Boolean {
-        if (index >= this.items.size) return false
+        if (index >= this.itemCount) return false
         val result = this.items.addAll(index, items)
         notifyItemInserted(index)
         return result
@@ -135,7 +135,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
      */
     fun scrollToBottom() {
         if (this.items.isNotEmpty()) {
-            recyclerView?.scrollToPosition(this.items.size - 1)
+            recyclerView?.scrollToPosition(this.itemCount - 1)
         }
     }
 
@@ -153,7 +153,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
      */
     fun smoothScrollToBottom() {
         if (this.items.isNotEmpty()) {
-            recyclerView?.smoothScrollToPosition(this.items.size - 1)
+            recyclerView?.smoothScrollToPosition(this.itemCount - 1)
         }
     }
 
