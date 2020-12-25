@@ -12,7 +12,7 @@ import com.adazhdw.adapter.loadmore.wrapper.WrapperAdapter
 class LoadMoreAdapter(
     adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
     private val loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItemDefault(),
-    override val loadMoreEnabled: Boolean = true
+    override var loadMoreEnabled: Boolean = true
 ) : WrapperAdapter<LoadMoreItemDefault, RecyclerView.ViewHolder>(adapter), ILoadMore {
 
     init {

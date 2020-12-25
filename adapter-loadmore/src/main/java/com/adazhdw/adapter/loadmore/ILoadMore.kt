@@ -7,7 +7,7 @@ package com.adazhdw.adapter.loadmore
  **/
 interface ILoadMore {
     val isLoading: Boolean
-    val loadMoreEnabled: Boolean
+    var loadMoreEnabled: Boolean
     val noMore: Boolean
     fun loading()
     fun loadComplete(error: Boolean = false, hasMore: Boolean = true)

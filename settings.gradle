@@ -3,3 +3,4 @@ include ':adapter-binding'
 include ':adapter-core'
 include ':adapter-app'
 rootProject.name = "RVAdapter"
+include ':adapter-list'
