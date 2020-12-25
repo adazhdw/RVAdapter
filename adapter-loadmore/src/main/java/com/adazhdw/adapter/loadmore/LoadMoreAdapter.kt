@@ -20,6 +20,7 @@ class LoadMoreAdapter(
     }
 
     override fun getItemCount(): Int {
+        if (getRealAdapter().itemCount == 0) return 0
         return getRealAdapter().itemCount + if (loadMoreEnabled) 1 else 0
     }
 

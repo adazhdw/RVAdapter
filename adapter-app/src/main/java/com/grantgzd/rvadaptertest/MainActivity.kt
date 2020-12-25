@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val fragments = arrayOf(Fragment1(), Fragment2())
+        val fragments = arrayOf(Fragment2(), Fragment1())
         binding.viewPager.offscreenPageLimit = 2
         binding.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {

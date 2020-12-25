@@ -13,7 +13,7 @@ import com.adazhdw.adapter.list.base.ViewBindingFragment
 import com.adazhdw.adapter.list.databinding.FragmentListLayoutExBinding
 import com.adazhdw.adapter.list.recyclerview.LinearSpacingItemDecoration
 import com.adazhdw.adapter.loadmore.LoadMoreAdapter
-import com.adazhdw.adapter.loadmore.defaultLoadMoreListener
+import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.adazhdw.adapter.loadmore.loadMoreAdapter
 
 /**
@@ -39,14 +39,18 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
     }
 
     override fun initView(view: View) {
+        viewBinding.swipe.isEnabled = refreshEnabled()
         viewBinding.swipe.setOnRefreshListener { requestStart() }
+        viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.layoutManager = getLayoutManager()
         viewBinding.dataRV.addItemDecoration(itemDecoration())
         loadMoreAdapter = loadMoreAdapter(listAdapter)
         loadMoreAdapter.bind(viewBinding.dataRV)
-        viewBinding.dataRV.defaultLoadMoreListener(loadMoreAvailable = loadMoreAvailable()) {
-            requestData(false)
-        }
+        viewBinding.dataRV.setLoadMoreListener(object : LoadMoreRecyclerView.LoadMoreListener {
+            override fun onLoadMore() {
+                requestData(false)
+            }
+        })
         rvExtra(viewBinding.dataRV)
     }
 
@@ -64,18 +68,14 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
     private fun requestData(refreshing: Boolean) {
         if (refreshing) {
             currPage = startAtPage()
-            loadMoreAdapter.loadMoreEnabled = false
-            viewBinding.swipe.isEnabled = true
+            viewBinding.dataRV.setLoadMoreEnabled(false)
         } else {
-            viewBinding.swipe.isEnabled = false
-            loadMoreAdapter.loadMoreEnabled = true
+            viewBinding.dataRV.setLoadMoreEnabled(true)
         }
         onLoad(currPage, object : LoadDataCallback<Item> {
             override fun onSuccess(data: List<Item>, hasMore: Boolean) {
-                viewBinding.swipe.isEnabled = true
                 viewBinding.swipe.isRefreshing = false
-                loadMoreAdapter.loadMoreEnabled = true
-                loadMoreAdapter.loadComplete(hasMore = hasMore)
+                viewBinding.dataRV.loadComplete()
                 if (data.isNotEmpty()) currPage += 1
                 if (refreshing) {
                     listAdapter.setData(data)
@@ -85,13 +85,13 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
                 } else {
                     listAdapter.addData(data)
                 }
+                loadMoreAdapter.loadComplete(hasMore = hasMore)
             }
 
             override fun onFail(code: Int, msg: String?) {
                 if (refreshing) viewBinding.swipe.isRefreshing = false
-                viewBinding.swipe.isEnabled = true
                 viewBinding.swipe.isRefreshing = false
-                loadMoreAdapter.loadMoreEnabled = true
+                viewBinding.dataRV.loadComplete()
                 loadMoreAdapter.loadComplete(error = true, hasMore = true)
                 onError(code, msg)
             }
@@ -99,12 +99,13 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
     }
 
     abstract fun onLoad(page: Int, callback: LoadDataCallback<Item>)
+    open fun refreshEnabled(): Boolean = true
     open fun getDataAdapter() = listAdapter
     open fun loadMoreAvailable(): Boolean = true/*总开关，控制loadMore是否可用*/
     open fun startAtPage() = 0/*开始页数*/
     open fun perPage() = 20/*每页个数pageSize*/
     open fun onError(code: Int, msg: String?) {}
-    open fun rvExtra(recyclerView: RecyclerView) {}/*recyclerView其他属性设置*/
+    open fun rvExtra(recyclerView: LoadMoreRecyclerView) {}/*recyclerView其他属性设置*/
     open fun getLayoutManager(): RecyclerView.LayoutManager {
         return LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
