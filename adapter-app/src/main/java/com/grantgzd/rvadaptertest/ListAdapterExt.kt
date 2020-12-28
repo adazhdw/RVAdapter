@@ -1,6 +1,7 @@
 package com.grantgzd.rvadaptertest
 
 import android.widget.TextView
+import android.widget.Toast
 import com.adazhdw.adapter.binding.defaultBindingItem
 import com.adazhdw.adapter.binding.getDataBinding
 import com.adazhdw.adapter.core.defaultItem
@@ -21,6 +22,9 @@ fun homeModel(model: HomeModel) =
         onBindViewHolder {
             val data = getItemData<HomeModel>()
             text.text = (data?.msg + adapterPosition)
+            itemView.setOnClickListener {
+                Toast.makeText(it.context, text.text.toString(), Toast.LENGTH_SHORT).show()
+            }
         }
     })
 

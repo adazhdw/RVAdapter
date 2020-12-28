@@ -35,7 +35,7 @@ class Fragment2 : ViewBindingFragment() {
 
 class ListExampleFragment : ListFragment<DefaultItem<HomeModel>>() {
 
-    override fun refreshEnabled(): Boolean = true
+    override fun refreshEnabled(): Boolean = false
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -46,7 +46,7 @@ class ListExampleFragment : ListFragment<DefaultItem<HomeModel>>() {
                     add(homeModel(HomeModel("msg----")))
                 }
             }
-            callback.onSuccess(list, if (isRefreshing) true else mData.size + list.size < 10)
+            callback.onSuccess(list, if (isRefreshing) true else mData.size + list.size < 14)
         }, 1000)
     }
 
