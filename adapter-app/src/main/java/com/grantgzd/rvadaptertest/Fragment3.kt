@@ -42,10 +42,6 @@ class ListExampleFragment3 : ListFragmentEx<DefaultItem<HomeModel>>() {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun getLayoutManager(): RecyclerView.LayoutManager {
-        return GridLayoutManager(context,2)
-    }
-
     override fun onLoad(page: Int, callback: LoadDataCallback<DefaultItem<HomeModel>>) {
         handler.postDelayed({
             val list = mutableListOf<DefaultItem<HomeModel>>().apply {

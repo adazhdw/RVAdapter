@@ -5,6 +5,8 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.list.ListFragment
@@ -38,6 +40,10 @@ class ListExampleFragment : ListFragment<DefaultItem<HomeModel>>() {
     override fun refreshEnabled(): Boolean = false
 
     private val handler = Handler(Looper.getMainLooper())
+
+    override fun getLayoutManager(): RecyclerView.LayoutManager {
+        return LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+    }
 
     override fun onLoad(page: Int, callback: LoadDataCallback<DefaultItem<HomeModel>>) {
         handler.postDelayed({
