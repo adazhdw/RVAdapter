@@ -13,13 +13,21 @@ open class WrapperAdapter<Item : IItem<*, VH>, VH : RecyclerView.ViewHolder>(ada
     AbsWrapperAdapter<Item, VH>(adapter),
     WrapperAdapterDataObserver.Subscriber {
 
+    private var dataObserver: WrapperAdapterDataObserver? = null
+
     init {
         registerDataObserver()
     }
 
     private fun registerDataObserver() {
-        val observer = WrapperAdapterDataObserver(WeakReference(this), WeakReference(getRealAdapter()))
-        getRealAdapter().registerAdapterDataObserver(observer)
+        if (dataObserver != null) {
+            // 为原有的RecyclerAdapter移除数据监听对象
+            getRealAdapter().unregisterAdapterDataObserver(dataObserver!!)
+        } else {
+            dataObserver = WrapperAdapterDataObserver(WeakReference(this), WeakReference(getRealAdapter()))
+            getRealAdapter().registerAdapterDataObserver(dataObserver!!)
+            dataObserver?.onChanged()
+        }
     }
 
     override var insertItems: List<Item> = emptyList()

@@ -10,11 +10,9 @@ import com.adazhdw.adapter.core.GenericItem
 import com.adazhdw.adapter.core.ListAdapter
 import com.adazhdw.adapter.core.bind
 import com.adazhdw.adapter.list.base.ViewBindingFragment
-import com.adazhdw.adapter.list.databinding.FragmentListLayoutExBinding
+import com.adazhdw.adapter.list.databinding.FragmentListLayoutRvexBinding
 import com.adazhdw.adapter.list.recyclerview.LinearSpacingItemDecoration
-import com.adazhdw.adapter.loadmore.LoadMoreAdapter
-import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
-import com.adazhdw.adapter.loadmore.loadMoreAdapter
+import com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
 
 /**
  * FileName: ListFragment
@@ -22,11 +20,10 @@ import com.adazhdw.adapter.loadmore.loadMoreAdapter
  * Date: 2020/12/25 10:41
  * Description: 自己封装的 直接使用的 ListFragment，只需要传入 Item
  */
-abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
+abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
 
-    private lateinit var viewBinding: FragmentListLayoutExBinding
+    private lateinit var viewBinding: FragmentListLayoutRvexBinding
     private var currPage = 0
-    protected lateinit var loadMoreAdapter: LoadMoreAdapter
     protected val listAdapter: ListAdapter by lazy { ListAdapter() }
     protected val isRefreshing: Boolean
         get() = viewBinding.swipe.isRefreshing
@@ -34,7 +31,7 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
         get() = listAdapter.getData()
 
     final override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
-        viewBinding = FragmentListLayoutExBinding.inflate(inflater, container, false)
+        viewBinding = FragmentListLayoutRvexBinding.inflate(inflater, container, false)
         return viewBinding
     }
 
@@ -43,9 +40,8 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
         viewBinding.swipe.setOnRefreshListener { refresh() }
         viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.addItemDecoration(itemDecoration())
-        loadMoreAdapter = loadMoreAdapter(listAdapter)
-        loadMoreAdapter.bind(viewBinding.dataRV,getLayoutManager())
-        viewBinding.dataRV.setLoadMoreListener(object : LoadMoreRecyclerView.LoadMoreListener {
+        listAdapter.bind(viewBinding.dataRV,getLayoutManager())
+        viewBinding.dataRV.setLoadMoreListener(object : LoadMoreRecyclerViewEx.LoadMoreListener {
             override fun onLoadMore() {
                 requestData(false)
             }
@@ -76,7 +72,7 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
             override fun onSuccess(data: List<Item>, hasMore: Boolean) {
                 viewBinding.swipe.isEnabled = refreshEnabled()
                 if (refreshing) viewBinding.swipe.isRefreshing = false
-                viewBinding.dataRV.loadComplete()
+                viewBinding.dataRV.loadComplete(hasMore = hasMore)
                 if (data.isNotEmpty()) currPage += 1
                 if (refreshing) {
                     listAdapter.setData(data)
@@ -86,15 +82,13 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
                 } else {
                     listAdapter.addData(data)
                 }
-                loadMoreAdapter.loadComplete(hasMore = hasMore)
             }
 
             override fun onFail(code: Int, msg: String?) {
                 viewBinding.swipe.isEnabled = refreshEnabled()
                 if (refreshing) viewBinding.swipe.isRefreshing = false
                 viewBinding.swipe.isRefreshing = false
-                viewBinding.dataRV.loadComplete()
-                loadMoreAdapter.loadComplete(error = true, hasMore = true)
+                viewBinding.dataRV.loadComplete(error = true, hasMore = true)
                 onError(code, msg)
             }
         })
@@ -107,7 +101,7 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
     open fun startAtPage() = 0/*开始页数*/
     open fun perPage() = 20/*每页个数pageSize*/
     open fun onError(code: Int, msg: String?) {}
-    open fun rvExtra(recyclerView: LoadMoreRecyclerView) {}/*recyclerView其他属性设置*/
+    open fun rvExtra(recyclerView: LoadMoreRecyclerViewEx) {}/*recyclerView其他属性设置*/
     open fun getLayoutManager(): RecyclerView.LayoutManager {
         return LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
