@@ -105,6 +105,8 @@ open class LoadMoreRecyclerView : RecyclerView {
                     ) {
                         dx -= mReusableIntPair[0]
                         dy -= mReusableIntPair[1]
+                        // Scroll has initiated, prevent parents from intercepting
+                        parent.requestDisallowInterceptTouchEvent(true)
                     }
                     mLastTouchX = x
                     mLastTouchY = y

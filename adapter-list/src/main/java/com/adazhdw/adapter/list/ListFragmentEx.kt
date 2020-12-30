@@ -1,5 +1,6 @@
 package com.adazhdw.adapter.list
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ import com.adazhdw.adapter.core.ListAdapter
 import com.adazhdw.adapter.core.bind
 import com.adazhdw.adapter.list.base.ViewBindingFragment
 import com.adazhdw.adapter.list.databinding.FragmentListLayoutRvexBinding
-import com.adazhdw.adapter.list.recyclerview.LinearSpacingItemDecoration
+import com.adazhdw.adapter.list.decoration.LinearSpacingItemDecoration
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
 
@@ -37,7 +38,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
     }
 
     override fun initView(view: View) {
-        viewBinding.swipe.isEnabled = refreshEnabled()
+        viewBinding.swipe.isEnabled = refreshEnabled
         viewBinding.swipe.setOnRefreshListener { refresh() }
         viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.addItemDecoration(itemDecoration())
@@ -58,7 +59,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
         if (!viewBinding.swipe.isRefreshing) {
             viewBinding.swipe.isRefreshing = true
         }
-        requestData(viewBinding.swipe.isRefreshing)
+        requestData(true)
     }
 
     private fun requestData(refreshing: Boolean) {
@@ -71,8 +72,8 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
         }
         onLoad(currPage, object : LoadDataCallback<Item> {
             override fun onSuccess(data: List<Item>, hasMore: Boolean) {
-                viewBinding.swipe.isEnabled = refreshEnabled()
                 if (refreshing) viewBinding.swipe.isRefreshing = false
+                viewBinding.swipe.isEnabled = refreshEnabled
                 viewBinding.dataRV.loadComplete(hasMore = hasMore)
                 if (data.isNotEmpty()) currPage += 1
                 if (refreshing) {
@@ -86,7 +87,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
             }
 
             override fun onFail(code: Int, msg: String?) {
-                viewBinding.swipe.isEnabled = refreshEnabled()
+                viewBinding.swipe.isEnabled = refreshEnabled
                 if (refreshing) viewBinding.swipe.isRefreshing = false
                 viewBinding.swipe.isRefreshing = false
                 viewBinding.dataRV.loadComplete(error = true, hasMore = true)
@@ -96,7 +97,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
     }
 
     abstract fun onLoad(page: Int, callback: LoadDataCallback<Item>)
-    open fun refreshEnabled(): Boolean = true
+    open var refreshEnabled: Boolean = true
     open fun getDataAdapter() = listAdapter
     open fun loadMoreAvailable(): Boolean = true/*总开关，控制loadMore是否可用*/
     open fun startAtPage() = 0/*开始页数*/

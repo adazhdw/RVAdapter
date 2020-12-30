@@ -1,4 +1,4 @@
-package com.adazhdw.adapter.list.recyclerview;
+package com.adazhdw.adapter.list.decoration;
 
 import android.content.Context;
 import android.content.res.TypedArray;

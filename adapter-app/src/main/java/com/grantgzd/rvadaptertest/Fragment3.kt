@@ -5,11 +5,8 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.adazhdw.adapter.core.DefaultItem
-import com.adazhdw.adapter.list.ListFragment
 import com.adazhdw.adapter.list.ListFragmentEx
 import com.adazhdw.adapter.list.base.ViewBindingFragment
 import com.grantgzd.rvadaptertest.databinding.LayoutViewPagerItem2Binding
@@ -38,7 +35,7 @@ class Fragment3 : ViewBindingFragment() {
 
 class ListExampleFragment3 : ListFragmentEx<DefaultItem<HomeModel>>() {
 
-    override fun refreshEnabled(): Boolean = false
+    override var refreshEnabled: Boolean = true
 
     private val handler = Handler(Looper.getMainLooper())
 

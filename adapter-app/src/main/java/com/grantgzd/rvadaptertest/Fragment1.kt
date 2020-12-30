@@ -1,5 +1,7 @@
 package com.grantgzd.rvadaptertest
 
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,7 @@ import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.core.bind
 import com.adazhdw.adapter.core.listAdapter
 import com.adazhdw.adapter.list.base.ViewBindingFragment
+import com.adazhdw.adapter.list.ext.stopRefresh
 import com.adazhdw.adapter.loadmore.defaultLoadMoreListener
 import com.adazhdw.adapter.loadmore.loadMoreAdapter
 import com.grantgzd.rvadaptertest.databinding.LayoutViewPagerItem1Binding
@@ -22,6 +25,7 @@ import com.grantgzd.rvadaptertest.databinding.LayoutViewPagerItem1Binding
  */
 class Fragment1 : ViewBindingFragment() {
 
+    private val handler = Handler(Looper.getMainLooper())
     private lateinit var pagerItem1Binding: LayoutViewPagerItem1Binding
     override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
         pagerItem1Binding = LayoutViewPagerItem1Binding.inflate(inflater, container, false)
@@ -46,6 +50,13 @@ class Fragment1 : ViewBindingFragment() {
             }
         }
         listAdapter.addData(list)
+
+        pagerItem1Binding.swipe.setOnRefreshListener {
+            handler.postDelayed({
+                listAdapter.setData(list)
+                pagerItem1Binding.swipe.stopRefresh()
+            }, 1000)
+        }
 
         //加载更多
         pagerItem1Binding.recyclerview.defaultLoadMoreListener {
