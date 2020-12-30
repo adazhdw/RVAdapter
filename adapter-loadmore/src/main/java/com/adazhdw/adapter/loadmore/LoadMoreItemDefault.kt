@@ -7,14 +7,14 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.adazhdw.adapter.core.AbsItem
-import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.core.DefaultViewHolder
 
 /**
  * author：adazhdw
  * date-time：2020/12/23 15:09
- * description：
+ * description：默认的 加载更多item实现
  **/
+
 class LoadMoreItemDefault(override val layoutRes: Int = R.layout.adapter_item_load_more_layout) :
     AbsItem<LoadMoreState, RecyclerView.ViewHolder>() {
     init {

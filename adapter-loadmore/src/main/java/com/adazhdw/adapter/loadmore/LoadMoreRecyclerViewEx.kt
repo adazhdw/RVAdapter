@@ -2,6 +2,7 @@ package com.adazhdw.adapter.loadmore
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.MotionEvent
 import androidx.annotation.IntDef
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,7 +44,70 @@ class LoadMoreRecyclerViewEx : RecyclerView {
     private var loadMoreAdapterEx: LoadMoreAdapterEx? = null
     private var mScrollDirection: Int = SCROLL_DIRECTION_BOTTOM
 
+    private var mInitialTouchX = 0
+    private var mInitialTouchY = 0
+    private var mLastTouchX = 0
+    private var mLastTouchY = 0
+    private var mScrollPointerId = -1
+    private var fingerUp = false
+    private var fingerLeft = false
+    override fun onTouchEvent(e: MotionEvent?): Boolean {
+        if (e == null) return super.onTouchEvent(e)
+        //使用RecyclerView部分源码来判断手指滑动方向
+        val canScrollHorizontally = layoutManager?.canScrollHorizontally() ?: false
+        val canScrollVertically = layoutManager?.canScrollVertically() ?: false
+        val action = e.actionMasked
+        val actionIndex = e.actionIndex
+        when (action) {
+            MotionEvent.ACTION_DOWN -> {
+                mScrollPointerId = e.getPointerId(0)
+                mInitialTouchX = (e.x + 0.5f).toInt().also { mLastTouchX = it }
+                mInitialTouchY = (e.y + 0.5f).toInt().also { mLastTouchY = it }
+            }
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                mScrollPointerId = e.getPointerId(actionIndex)
+                mInitialTouchX = (e.getX(actionIndex) + 0.5f).toInt().also { mLastTouchX = it }
+                mInitialTouchY = (e.getY(actionIndex) + 0.5f).toInt().also { mLastTouchY = it }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val index = e.findPointerIndex(mScrollPointerId)
+                if (index < 0) return false
+
+                val x = (e.getX(index) + 0.5f).toInt()
+                val y = (e.getY(index) + 0.5f).toInt()
+                var dx = mLastTouchX - x
+                var dy = mLastTouchY - y
+                if (mScrollState != SCROLL_STATE_DRAGGING) {
+                    if (canScrollHorizontally) {
+                        dx = if (dx > 0) {
+                            Math.max(0, dx)
+                        } else {
+                            Math.min(0, dx)
+                        }
+                    }
+                    if (canScrollVertically) {
+                        dy = if (dy > 0) {
+                            Math.max(0, dy)
+                        } else {
+                            Math.min(0, dy)
+                        }
+                    }
+                }
+                if (mScrollState == SCROLL_STATE_DRAGGING) {
+                    mLastTouchX = x
+                    mLastTouchY = y
+                }
+                fingerUp = dy > 0
+                fingerLeft = dx > 0
+            }
+        }
+        return super.onTouchEvent(e)
+    }
+
+    private var mScrollState = SCROLL_STATE_IDLE
     override fun onScrollStateChanged(state: Int) {
+        super.onScrollStateChanged(state)
+        mScrollState = state
         /*  state：
             SCROLL_STATE_IDLE     = 0 ：静止,没有滚动
             SCROLL_STATE_DRAGGING = 1 ：正在被外部拖拽,一般为用户正在用手指滚动
@@ -53,7 +117,7 @@ class LoadMoreRecyclerViewEx : RecyclerView {
             RecyclerView.canScrollVertically(-1)的值表示是否能向下滚动，false表示已经滚动到顶部，手指往下滑
             */
         // 判断RecyclerView滚动到底部，参考：http://www.jianshu.com/p/c138055af5d2
-        if (state != SCROLL_STATE_IDLE) return
+        if (mScrollState != SCROLL_STATE_IDLE) return
         val layoutManager = layoutManager
         val itemCount = layoutManager?.itemCount ?: 0
         if (itemCount <= 0) return
@@ -75,7 +139,7 @@ class LoadMoreRecyclerViewEx : RecyclerView {
                 if (itemCount == lastVisiblePosition + 1) canLoadMore = true
             }
         }
-        if (loadMoreAvailable && canLoadMore && state == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
+        if (loadMoreAvailable && canLoadMore && mScrollState == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
             val adapter = adapter ?: return
             if (adapter is ILoadMore && adapter.loadMoreEnabled && !adapter.isLoading && !adapter.noMore) {
                 adapter.loading()
@@ -90,7 +154,13 @@ class LoadMoreRecyclerViewEx : RecyclerView {
      * 2、手指向上划，并且View已经滑动到底部，返回true
      */
     private fun alreadyTopOrBottom(): Boolean {
-        return !canScrollVertically(mScrollDirection)
+        var already = false
+        if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_BOTTOM && fingerUp) {
+            already = true
+        } else if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_TOP && !fingerUp) {
+            already = true
+        }
+        return already
     }
 
     fun loadComplete(error: Boolean = false, hasMore: Boolean = true) {

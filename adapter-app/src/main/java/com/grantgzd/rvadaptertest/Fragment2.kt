@@ -11,6 +11,7 @@ import androidx.viewbinding.ViewBinding
 import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.list.ListFragment
 import com.adazhdw.adapter.list.base.ViewBindingFragment
+import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.grantgzd.rvadaptertest.databinding.LayoutViewPagerItem2Binding
 
 /**
@@ -43,6 +44,10 @@ class ListExampleFragment : ListFragment<DefaultItem<HomeModel>>() {
 
     override fun getLayoutManager(): RecyclerView.LayoutManager {
         return LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+    }
+
+    override fun rvExtra(recyclerView: LoadMoreRecyclerView) {
+        recyclerView.canScrollDirection(LoadMoreRecyclerView.SCROLL_DIRECTION_TOP)
     }
 
     override fun onLoad(page: Int, callback: LoadDataCallback<DefaultItem<HomeModel>>) {

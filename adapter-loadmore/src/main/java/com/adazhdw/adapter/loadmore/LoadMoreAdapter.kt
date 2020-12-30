@@ -7,7 +7,7 @@ import com.adazhdw.adapter.loadmore.wrapper.WrapperAdapter
 /**
  * author：adazhdw
  * date-time：2020/12/23 15:08
- * description：
+ * description：默认的加载更多 adapter 实现
  **/
 class LoadMoreAdapter(
     adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
