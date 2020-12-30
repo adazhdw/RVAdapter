@@ -34,7 +34,7 @@ class LoadMoreAdapter(
     }
 
     private fun isLoadMoreItem(position: Int): Boolean {
-        return position == getRealAdapter().itemCount
+        return loadMoreEnabled && position == getRealAdapter().itemCount
     }
 
     override val isLoading: Boolean

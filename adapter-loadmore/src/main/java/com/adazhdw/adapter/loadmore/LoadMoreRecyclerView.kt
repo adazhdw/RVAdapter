@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
  * FileName: LoadMoreRecyclerView
  * Author: adazhdw
  * Date: 2020/12/25 17:14
- * Description:
+ * Description: 继承自RecyclerView的加载更多RecyclerView
  * History:
  */
-class LoadMoreRecyclerView : RecyclerView {
+open class LoadMoreRecyclerView : RecyclerView {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
@@ -159,7 +159,7 @@ class LoadMoreRecyclerView : RecyclerView {
         return already
     }
 
-    fun loadComplete() {
+    open fun loadComplete(error: Boolean = false, hasMore: Boolean = true) {
         this.isLoading = false
         this.loadMoreEnabled = true
     }

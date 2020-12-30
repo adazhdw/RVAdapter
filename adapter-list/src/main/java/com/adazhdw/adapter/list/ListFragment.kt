@@ -44,7 +44,7 @@ abstract class ListFragment<Item : GenericItem> : ViewBindingFragment() {
         viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.addItemDecoration(itemDecoration())
         loadMoreAdapter = loadMoreAdapter(listAdapter)
-        loadMoreAdapter.bind(viewBinding.dataRV,getLayoutManager())
+        loadMoreAdapter.bind(viewBinding.dataRV, getLayoutManager())
         viewBinding.dataRV.setLoadMoreListener(object : LoadMoreRecyclerView.LoadMoreListener {
             override fun onLoadMore() {
                 requestData(false)

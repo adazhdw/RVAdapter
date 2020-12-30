@@ -12,6 +12,7 @@ import com.adazhdw.adapter.core.bind
 import com.adazhdw.adapter.list.base.ViewBindingFragment
 import com.adazhdw.adapter.list.databinding.FragmentListLayoutRvexBinding
 import com.adazhdw.adapter.list.recyclerview.LinearSpacingItemDecoration
+import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
 
 /**
@@ -40,8 +41,8 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
         viewBinding.swipe.setOnRefreshListener { refresh() }
         viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.addItemDecoration(itemDecoration())
-        listAdapter.bind(viewBinding.dataRV,getLayoutManager())
-        viewBinding.dataRV.setLoadMoreListener(object : LoadMoreRecyclerViewEx.LoadMoreListener {
+        listAdapter.bind(viewBinding.dataRV, getLayoutManager())
+        viewBinding.dataRV.setLoadMoreListener(object : LoadMoreRecyclerView.LoadMoreListener {
             override fun onLoadMore() {
                 requestData(false)
             }
