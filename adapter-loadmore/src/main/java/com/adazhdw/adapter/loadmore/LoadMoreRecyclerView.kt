@@ -50,6 +50,7 @@ open class LoadMoreRecyclerView : RecyclerView {
     private val mReusableIntPair = IntArray(2)
     private var fingerUp = false
     private var fingerLeft = false
+    private val oneAction = BooleanArray(2)//用来判断一次手指按下抬起
     override fun onTouchEvent(e: MotionEvent?): Boolean {
         if (e == null) return super.onTouchEvent(e)
         //使用RecyclerView部分源码来判断手指滑动方向
@@ -59,6 +60,9 @@ open class LoadMoreRecyclerView : RecyclerView {
         val actionIndex = e.actionIndex
         when (action) {
             MotionEvent.ACTION_DOWN -> {
+                if (!oneAction[0]) {
+                    oneAction[0] = true
+                }
                 mScrollPointerId = e.getPointerId(0)
                 mInitialTouchX = (e.x + 0.5f).toInt().also { mLastTouchX = it }
                 mInitialTouchY = (e.y + 0.5f).toInt().also { mLastTouchY = it }
@@ -96,11 +100,8 @@ open class LoadMoreRecyclerView : RecyclerView {
                     mReusableIntPair[0] = 0
                     mReusableIntPair[1] = 0
                     if (dispatchNestedPreScroll(
-                            if (canScrollHorizontally) dx else 0,
-                            if (canScrollVertically) dy else 0,
-                            mReusableIntPair,
-                            mScrollOffset,
-                            ViewCompat.TYPE_TOUCH
+                            if (canScrollHorizontally) dx else 0, if (canScrollVertically) dy else 0,
+                            mReusableIntPair, mScrollOffset, ViewCompat.TYPE_TOUCH
                         )
                     ) {
                         dx -= mReusableIntPair[0]
@@ -113,6 +114,11 @@ open class LoadMoreRecyclerView : RecyclerView {
                 }
                 fingerUp = dy > 0
                 fingerLeft = dx > 0
+            }
+            MotionEvent.ACTION_UP -> {
+                if (oneAction[0]) {
+                    oneAction[1] = true
+                }
             }
         }
         return super.onTouchEvent(e)
@@ -155,9 +161,12 @@ open class LoadMoreRecyclerView : RecyclerView {
         if (loadMoreAvailable && canLoadMore && mScrollState == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
             val adapter = adapter ?: return
             if (adapter is ILoadMore && !adapter.isLoading && !adapter.noMore) {
-                adapter.loading()
-                this.isLoading = true
-                this.mLoadMoreListener?.onLoadMore()
+                if (oneAction[0] && oneAction[1]) {
+                    adapter.loading()
+                    this.isLoading = true
+                    this.mLoadMoreListener?.onLoadMore()
+                    oneAction[0] = false.also { oneAction[1] = it }
+                }
             }
         }
     }
