@@ -20,6 +20,8 @@ abstract class AbsWrapperAdapter<Item : IItem<*, VH>, VH : RecyclerView.ViewHold
 
     abstract var insertItems: List<Item>
 
+    protected var recyclerView: RecyclerView? = null
+
     /**Sets an LayoutInflater Cache cache to this fast adapter instance.*/
     private val layoutInflaterCache: SparseArray<WeakReference<LayoutInflater>> = SparseArray()
 
@@ -80,11 +82,13 @@ abstract class AbsWrapperAdapter<Item : IItem<*, VH>, VH : RecyclerView.ViewHold
                 }
             }
         }
+        this.recyclerView = recyclerView
         layoutInflaterCache.put(0, WeakReference(LayoutInflater.from(recyclerView.context)))
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         adapter.onDetachedFromRecyclerView(recyclerView)
+        this.recyclerView = null
         layoutInflaterCache.clear()
     }
 

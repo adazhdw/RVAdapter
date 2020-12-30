@@ -65,7 +65,7 @@ fun RecyclerView.defaultLoadMoreListener(
             }
             if (loadMoreAvailable && canLoadMore && newState == RecyclerView.SCROLL_STATE_IDLE && alreadyTopOrBottom()) {
                 val adapter = adapter ?: return
-                if (adapter is ILoadMore && adapter.loadMoreEnabled && !adapter.isLoading && !adapter.noMore) {
+                if (adapter is ILoadMore && !adapter.isLoading && !adapter.noMore) {
                     adapter.loading()
                     onLoadMore.invoke()
                 }

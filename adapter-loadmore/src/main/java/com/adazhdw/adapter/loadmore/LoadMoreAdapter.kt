@@ -12,16 +12,16 @@ import com.adazhdw.adapter.loadmore.wrapper.WrapperAdapter
 class LoadMoreAdapter(
     adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
     private val loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItemDefault(),
-    override var loadMoreEnabled: Boolean = true
+    override var needLoadMore: Boolean = true
 ) : WrapperAdapter<LoadMoreItemDefault, RecyclerView.ViewHolder>(adapter), ILoadMore {
 
     init {
-        if (loadMoreEnabled) insertItems = listOf(loadMoreItem as LoadMoreItemDefault)
+        if (needLoadMore) insertItems = listOf(loadMoreItem as LoadMoreItemDefault)
     }
 
     override fun getItemCount(): Int {
         if (getRealAdapter().itemCount == 0) return 0
-        return getRealAdapter().itemCount + if (loadMoreEnabled) 1 else 0
+        return getRealAdapter().itemCount + if (needLoadMore) 1 else 0
     }
 
     override fun shouldInsertItemAtPosition(position: Int): Boolean {
@@ -34,7 +34,7 @@ class LoadMoreAdapter(
     }
 
     private fun isLoadMoreItem(position: Int): Boolean {
-        return loadMoreEnabled && position == getRealAdapter().itemCount
+        return needLoadMore && position == getRealAdapter().itemCount
     }
 
     override val isLoading: Boolean

@@ -7,7 +7,7 @@ import androidx.annotation.IntRange
  * date-time：2020/12/18 13:41
  * description：
  **/
-open class ListAdapter : AbsAdapter<GenericItem>() {
+open class ListAdapter : AbsAdapter<GenericItem>(), IScrollAction {
 
     private var items = mutableListOf<GenericItem>()
 
@@ -124,7 +124,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
     /**
      * 划到顶部
      */
-    fun scrollToTop() {
+    override fun scrollToTop() {
         if (this.items.isNotEmpty()) {
             recyclerView?.scrollToPosition(0)
         }
@@ -133,7 +133,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
     /**
      * 划到底部
      */
-    fun scrollToBottom() {
+    override fun scrollToBottom() {
         if (this.items.isNotEmpty()) {
             recyclerView?.scrollToPosition(this.itemCount - 1)
         }
@@ -142,7 +142,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
     /**
      * smooth划到顶部
      */
-    fun smoothScrollToTop() {
+    override fun smoothScrollToTop() {
         if (this.items.isNotEmpty()) {
             recyclerView?.smoothScrollToPosition(0)
         }
@@ -151,7 +151,7 @@ open class ListAdapter : AbsAdapter<GenericItem>() {
     /**
      * smooth划到底部
      */
-    fun smoothScrollToBottom() {
+    override fun smoothScrollToBottom() {
         if (this.items.isNotEmpty()) {
             recyclerView?.smoothScrollToPosition(this.itemCount - 1)
         }
