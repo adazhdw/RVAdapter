@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.annotation.IntDef
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +46,8 @@ open class LoadMoreRecyclerView : RecyclerView {
     private var mLastTouchX = 0
     private var mLastTouchY = 0
     private var mScrollPointerId = -1
+    private val mScrollOffset = IntArray(2)
+    private val mReusableIntPair = IntArray(2)
     private var fingerUp = false
     private var fingerLeft = false
     override fun onTouchEvent(e: MotionEvent?): Boolean {
@@ -90,6 +93,19 @@ open class LoadMoreRecyclerView : RecyclerView {
                     }
                 }
                 if (mScrollState == SCROLL_STATE_DRAGGING) {
+                    mReusableIntPair[0] = 0
+                    mReusableIntPair[1] = 0
+                    if (dispatchNestedPreScroll(
+                            if (canScrollHorizontally) dx else 0,
+                            if (canScrollVertically) dy else 0,
+                            mReusableIntPair,
+                            mScrollOffset,
+                            ViewCompat.TYPE_TOUCH
+                        )
+                    ) {
+                        dx -= mReusableIntPair[0]
+                        dy -= mReusableIntPair[1]
+                    }
                     mLastTouchX = x
                     mLastTouchY = y
                 }
