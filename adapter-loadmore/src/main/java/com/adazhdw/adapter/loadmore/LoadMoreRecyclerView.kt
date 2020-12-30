@@ -132,7 +132,6 @@ open class LoadMoreRecyclerView : RecyclerView {
         if (mScrollState != SCROLL_STATE_IDLE) return
         val layoutManager = layoutManager
         val itemCount = layoutManager?.itemCount ?: 0
-        if (itemCount <= 0) return
         val lastVisiblePosition: Int
         var canLoadMore = false
         when (layoutManager) {
