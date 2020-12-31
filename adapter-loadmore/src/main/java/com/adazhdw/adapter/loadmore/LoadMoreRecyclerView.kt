@@ -50,7 +50,6 @@ open class LoadMoreRecyclerView : RecyclerView {
     private val mReusableIntPair = IntArray(2)
     private var fingerUp = false
     private var fingerLeft = false
-    private val oneAction = BooleanArray(2)//用来判断一次手指按下抬起
     override fun onTouchEvent(e: MotionEvent?): Boolean {
         if (e == null) return super.onTouchEvent(e)
         //使用RecyclerView部分源码来判断手指滑动方向
@@ -60,9 +59,6 @@ open class LoadMoreRecyclerView : RecyclerView {
         val actionIndex = e.actionIndex
         when (action) {
             MotionEvent.ACTION_DOWN -> {
-                if (!oneAction[0]) {
-                    oneAction[0] = true
-                }
                 mScrollPointerId = e.getPointerId(0)
                 mInitialTouchX = (e.x + 0.5f).toInt().also { mLastTouchX = it }
                 mInitialTouchY = (e.y + 0.5f).toInt().also { mLastTouchY = it }
@@ -115,13 +111,27 @@ open class LoadMoreRecyclerView : RecyclerView {
                 fingerUp = dy > 0
                 fingerLeft = dx > 0
             }
+            MotionEvent.ACTION_POINTER_UP -> {
+                onPointerUp(e)
+            }
             MotionEvent.ACTION_UP -> {
-                if (oneAction[0]) {
-                    oneAction[1] = true
-                }
+
             }
         }
         return super.onTouchEvent(e)
+    }
+
+    private fun onPointerUp(e: MotionEvent) {
+        val actionIndex = e.actionIndex
+        if (e.getPointerId(actionIndex) == mScrollPointerId) {
+            // Pick a new pointer to pick up the slack.
+            val newIndex = if (actionIndex == 0) 1 else 0
+            mScrollPointerId = e.getPointerId(newIndex)
+            mLastTouchX = (e.getX(newIndex) + 0.5f).toInt()
+            mInitialTouchX = mLastTouchX
+            mLastTouchY = (e.getY(newIndex) + 0.5f).toInt()
+            mInitialTouchY = mLastTouchY
+        }
     }
 
     private var mScrollState = SCROLL_STATE_IDLE
@@ -161,12 +171,9 @@ open class LoadMoreRecyclerView : RecyclerView {
         if (loadMoreAvailable && canLoadMore && mScrollState == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
             val adapter = adapter ?: return
             if (adapter is ILoadMore && !adapter.isLoading && !adapter.noMore) {
-                if (oneAction[0] && oneAction[1]) {
-                    adapter.loading()
-                    this.isLoading = true
-                    this.mLoadMoreListener?.onLoadMore()
-                    oneAction[0] = false.also { oneAction[1] = it }
-                }
+                adapter.loading()
+                this.isLoading = true
+                this.mLoadMoreListener?.onLoadMore()
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.adazhdw.adapter.list
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,7 @@ import com.adazhdw.adapter.core.bind
 import com.adazhdw.adapter.list.base.ViewBindingFragment
 import com.adazhdw.adapter.list.databinding.FragmentListLayoutRvexBinding
 import com.adazhdw.adapter.list.decoration.LinearSpacingItemDecoration
+import com.adazhdw.adapter.list.ext.startRefresh
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
 
@@ -39,7 +39,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
 
     override fun initView(view: View) {
         viewBinding.swipe.isEnabled = refreshEnabled
-        viewBinding.swipe.setOnRefreshListener { refresh() }
+        viewBinding.swipe.setOnRefreshListener { requestData(true) }
         viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.addItemDecoration(itemDecoration())
         listAdapter.bind(viewBinding.dataRV, getLayoutManager())
@@ -56,9 +56,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
     }
 
     fun refresh() {
-        if (!viewBinding.swipe.isRefreshing) {
-            viewBinding.swipe.isRefreshing = true
-        }
+        viewBinding.swipe.startRefresh()
         requestData(true)
     }
 
