@@ -41,13 +41,13 @@ open class LoadMoreRecyclerView : RecyclerView {
     private var mLoadMoreListener: LoadMoreListener? = null
     private var mScrollDirection: Int = SCROLL_DIRECTION_BOTTOM
 
-    private var mInitialTouchX = 0
-    private var mInitialTouchY = 0
-    private var mLastTouchX = 0
-    private var mLastTouchY = 0
-    private var mScrollPointerId = -1
-    private val mScrollOffset = IntArray(2)
-    private val mReusableIntPair = IntArray(2)
+    private var initialTouchX = 0
+    private var initialTouchY = 0
+    private var lastTouchX = 0
+    private var lastTouchY = 0
+    private var scrollPointerId = -1
+    private val scrollOffset = IntArray(2)
+    private val reusableIntPair = IntArray(2)
     private var fingerUp = false
     private var fingerLeft = false
     override fun onTouchEvent(e: MotionEvent?): Boolean {
@@ -59,24 +59,24 @@ open class LoadMoreRecyclerView : RecyclerView {
         val actionIndex = e.actionIndex
         when (action) {
             MotionEvent.ACTION_DOWN -> {
-                mScrollPointerId = e.getPointerId(0)
-                mInitialTouchX = (e.x + 0.5f).toInt().also { mLastTouchX = it }
-                mInitialTouchY = (e.y + 0.5f).toInt().also { mLastTouchY = it }
+                scrollPointerId = e.getPointerId(0)
+                initialTouchX = (e.x + 0.5f).toInt().also { lastTouchX = it }
+                initialTouchY = (e.y + 0.5f).toInt().also { lastTouchY = it }
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
-                mScrollPointerId = e.getPointerId(actionIndex)
-                mInitialTouchX = (e.getX(actionIndex) + 0.5f).toInt().also { mLastTouchX = it }
-                mInitialTouchY = (e.getY(actionIndex) + 0.5f).toInt().also { mLastTouchY = it }
+                scrollPointerId = e.getPointerId(actionIndex)
+                initialTouchX = (e.getX(actionIndex) + 0.5f).toInt().also { lastTouchX = it }
+                initialTouchY = (e.getY(actionIndex) + 0.5f).toInt().also { lastTouchY = it }
             }
             MotionEvent.ACTION_MOVE -> {
-                val index = e.findPointerIndex(mScrollPointerId)
+                val index = e.findPointerIndex(scrollPointerId)
                 if (index < 0) return false
 
                 val x = (e.getX(index) + 0.5f).toInt()
                 val y = (e.getY(index) + 0.5f).toInt()
-                var dx = mLastTouchX - x
-                var dy = mLastTouchY - y
-                if (mScrollState != SCROLL_STATE_DRAGGING) {
+                var dx = lastTouchX - x
+                var dy = lastTouchY - y
+                if (mLMScrollState != SCROLL_STATE_DRAGGING) {
                     if (canScrollHorizontally) {
                         dx = if (dx > 0) {
                             Math.max(0, dx)
@@ -92,21 +92,21 @@ open class LoadMoreRecyclerView : RecyclerView {
                         }
                     }
                 }
-                if (mScrollState == SCROLL_STATE_DRAGGING) {
-                    mReusableIntPair[0] = 0
-                    mReusableIntPair[1] = 0
+                if (mLMScrollState == SCROLL_STATE_DRAGGING) {
+                    reusableIntPair[0] = 0
+                    reusableIntPair[1] = 0
                     if (dispatchNestedPreScroll(
                             if (canScrollHorizontally) dx else 0, if (canScrollVertically) dy else 0,
-                            mReusableIntPair, mScrollOffset, ViewCompat.TYPE_TOUCH
+                            reusableIntPair, scrollOffset, ViewCompat.TYPE_TOUCH
                         )
                     ) {
-                        dx -= mReusableIntPair[0]
-                        dy -= mReusableIntPair[1]
+                        dx -= reusableIntPair[0]
+                        dy -= reusableIntPair[1]
                         // Scroll has initiated, prevent parents from intercepting
                         parent.requestDisallowInterceptTouchEvent(true)
                     }
-                    mLastTouchX = x
-                    mLastTouchY = y
+                    lastTouchX = x
+                    lastTouchY = y
                 }
                 fingerUp = dy > 0
                 fingerLeft = dx > 0
@@ -123,21 +123,21 @@ open class LoadMoreRecyclerView : RecyclerView {
 
     private fun onPointerUp(e: MotionEvent) {
         val actionIndex = e.actionIndex
-        if (e.getPointerId(actionIndex) == mScrollPointerId) {
+        if (e.getPointerId(actionIndex) == scrollPointerId) {
             // Pick a new pointer to pick up the slack.
             val newIndex = if (actionIndex == 0) 1 else 0
-            mScrollPointerId = e.getPointerId(newIndex)
-            mLastTouchX = (e.getX(newIndex) + 0.5f).toInt()
-            mInitialTouchX = mLastTouchX
-            mLastTouchY = (e.getY(newIndex) + 0.5f).toInt()
-            mInitialTouchY = mLastTouchY
+            scrollPointerId = e.getPointerId(newIndex)
+            lastTouchX = (e.getX(newIndex) + 0.5f).toInt()
+            initialTouchX = lastTouchX
+            lastTouchY = (e.getY(newIndex) + 0.5f).toInt()
+            initialTouchY = lastTouchY
         }
     }
 
-    private var mScrollState = SCROLL_STATE_IDLE
+    private var mLMScrollState = SCROLL_STATE_IDLE
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
-        mScrollState = state
+        mLMScrollState = state
         /*  state：
             SCROLL_STATE_IDLE     = 0 ：静止,没有滚动
             SCROLL_STATE_DRAGGING = 1 ：正在被外部拖拽,一般为用户正在用手指滚动
@@ -147,7 +147,7 @@ open class LoadMoreRecyclerView : RecyclerView {
             RecyclerView.canScrollVertically(-1)的值表示是否能向下滚动，false表示已经滚动到顶部，手指往下滑
             */
         // 判断RecyclerView滚动到底部，参考：http://www.jianshu.com/p/c138055af5d2
-        if (mScrollState != SCROLL_STATE_IDLE) return
+        if (mLMScrollState != SCROLL_STATE_IDLE) return
         val layoutManager = layoutManager
         val itemCount = layoutManager?.itemCount ?: 0
         val lastVisiblePosition: Int
@@ -168,7 +168,7 @@ open class LoadMoreRecyclerView : RecyclerView {
                 if (itemCount == lastVisiblePosition + 1) canLoadMore = true
             }
         }
-        if (loadMoreAvailable && canLoadMore && mScrollState == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
+        if (loadMoreAvailable && canLoadMore && mLMScrollState == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
             val adapter = adapter ?: return
             if (adapter is ILoadMore && !adapter.isLoading && !adapter.noMore) {
                 adapter.loading()
