@@ -2,9 +2,7 @@ package com.adazhdw.adapter.loadmore
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
 import androidx.annotation.IntDef
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,7 +39,7 @@ open class LoadMoreRecyclerView : RecyclerView {
     private var mLoadMoreListener: LoadMoreListener? = null
     private var mScrollDirection: Int = SCROLL_DIRECTION_BOTTOM
 
-    private var initialTouchX = 0
+    /*private var initialTouchX = 0
     private var initialTouchY = 0
     private var lastTouchX = 0
     private var lastTouchY = 0
@@ -77,11 +75,15 @@ open class LoadMoreRecyclerView : RecyclerView {
                 var dx = lastTouchX - x
                 var dy = lastTouchY - y
                 if (mLMScrollState != SCROLL_STATE_DRAGGING) {
+                    var startScroll = false
                     if (canScrollHorizontally) {
                         dx = if (dx > 0) {
                             Math.max(0, dx)
                         } else {
                             Math.min(0, dx)
+                        }
+                        if (dx != 0) {
+                            startScroll = true
                         }
                     }
                     if (canScrollVertically) {
@@ -90,7 +92,13 @@ open class LoadMoreRecyclerView : RecyclerView {
                         } else {
                             Math.min(0, dy)
                         }
+                        if (dy != 0) {
+                            startScroll = true
+                        }
                     }
+                    *//*if (startScroll) {
+                        mLMScrollState = SCROLL_STATE_DRAGGING
+                    }*//*
                 }
                 if (mLMScrollState == SCROLL_STATE_DRAGGING) {
                     reusableIntPair[0] = 0
@@ -105,17 +113,14 @@ open class LoadMoreRecyclerView : RecyclerView {
                         // Scroll has initiated, prevent parents from intercepting
                         parent.requestDisallowInterceptTouchEvent(true)
                     }
-                    lastTouchX = x
-                    lastTouchY = y
+                    lastTouchX = x - scrollOffset[0]
+                    lastTouchY = y - scrollOffset[1]
                 }
                 fingerUp = dy > 0
                 fingerLeft = dx > 0
             }
             MotionEvent.ACTION_POINTER_UP -> {
                 onPointerUp(e)
-            }
-            MotionEvent.ACTION_UP -> {
-
             }
         }
         return super.onTouchEvent(e)
@@ -132,7 +137,7 @@ open class LoadMoreRecyclerView : RecyclerView {
             lastTouchY = (e.getY(newIndex) + 0.5f).toInt()
             initialTouchY = lastTouchY
         }
-    }
+    }*/
 
     private var mLMScrollState = SCROLL_STATE_IDLE
     override fun onScrollStateChanged(state: Int) {
@@ -184,9 +189,9 @@ open class LoadMoreRecyclerView : RecyclerView {
      */
     private fun alreadyTopOrBottom(): Boolean {
         var already = false
-        if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_BOTTOM && fingerUp) {
+        if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_BOTTOM/* && fingerUp*/) {
             already = true
-        } else if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_TOP && !fingerUp) {
+        } else if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_TOP/* && !fingerUp*/) {
             already = true
         }
         return already
