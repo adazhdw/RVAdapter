@@ -36,6 +36,7 @@ open class LoadMoreRecyclerView : RecyclerView {
     private var isLoading = false//是否正在进行网络请求
     private var loadMoreAvailable = false//总开关，控制整体loadMore是否可用
     private var loadMoreEnabled = false//开关，控制ListFragment内loadMore是否可用,为了防止刷新和加载更多同时进行
+    private var hasMore = true//是否有更多数据
     private var mLoadMoreListener: LoadMoreListener? = null
     private var mScrollDirection: Int = SCROLL_DIRECTION_BOTTOM
 
@@ -173,7 +174,7 @@ open class LoadMoreRecyclerView : RecyclerView {
                 if (itemCount == lastVisiblePosition + 1) canLoadMore = true
             }
         }
-        if (loadMoreAvailable && canLoadMore && mLMScrollState == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading) {
+        if (loadMoreAvailable && canLoadMore && mLMScrollState == SCROLL_STATE_IDLE && alreadyTopOrBottom() && loadMoreEnabled && !isLoading && hasMore) {
             val adapter = adapter ?: return
             if (adapter is ILoadMore && !adapter.isLoading && !adapter.noMore) {
                 adapter.loading()
@@ -200,6 +201,7 @@ open class LoadMoreRecyclerView : RecyclerView {
     open fun loadComplete(error: Boolean = false, hasMore: Boolean = true) {
         this.isLoading = false
         this.loadMoreEnabled = true
+        this.hasMore = hasMore
     }
 
     /**

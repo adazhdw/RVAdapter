@@ -15,6 +15,7 @@ import com.adazhdw.adapter.list.decoration.LinearSpacingItemDecoration
 import com.adazhdw.adapter.list.ext.startRefresh
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
+import com.adazhdw.adapter.loadmore.SCROLL_DIRECTION_BOTTOM
 
 /**
  * FileName: ListFragment
@@ -26,6 +27,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
 
     private lateinit var viewBinding: FragmentListLayoutRvexBinding
     private var currPage = 0
+    private var isLoadingData = false
     protected val listAdapter: ListAdapter by lazy { ListAdapter() }
     protected val isRefreshing: Boolean
         get() = viewBinding.swipe.isRefreshing
@@ -42,6 +44,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
         viewBinding.swipe.setOnRefreshListener { requestData(true) }
         viewBinding.dataRV.setLoadMoreAvailable(loadMoreAvailable())
         viewBinding.dataRV.addItemDecoration(itemDecoration())
+        viewBinding.dataRV.canScrollDirection(SCROLL_DIRECTION_BOTTOM)
         listAdapter.bind(viewBinding.dataRV, getLayoutManager())
         viewBinding.dataRV.setLoadMoreListener(object : LoadMoreRecyclerView.LoadMoreListener {
             override fun onLoadMore() {
@@ -61,37 +64,43 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
     }
 
     private fun requestData(refreshing: Boolean) {
-        if (refreshing) {
-            currPage = startAtPage()
-            viewBinding.dataRV.setLoadMoreEnabled(false)
-        } else {
-            viewBinding.swipe.isEnabled = false
-            viewBinding.dataRV.setLoadMoreEnabled(true)
-        }
-        onLoad(currPage, object : LoadDataCallback<Item> {
-            override fun onSuccess(data: List<Item>, hasMore: Boolean) {
-                if (refreshing) viewBinding.swipe.isRefreshing = false
-                viewBinding.swipe.isEnabled = refreshEnabled
-                viewBinding.dataRV.loadComplete(hasMore = hasMore)
-                if (data.isNotEmpty()) currPage += 1
-                if (refreshing) {
-                    listAdapter.setData(data)
-                    if (data.isNotEmpty()) {
-                        viewBinding.dataRV.scrollToPosition(0)
+        if (!isLoadingData) {
+            isLoadingData = true
+            if (refreshing) {
+                currPage = startAtPage()
+                viewBinding.dataRV.setLoadMoreEnabled(false)
+            } else {
+                viewBinding.swipe.isEnabled = false
+                viewBinding.dataRV.setLoadMoreEnabled(true)
+            }
+            onLoad(currPage, object : LoadDataCallback<Item> {
+                override fun onSuccess(data: List<Item>, hasMore: Boolean) {
+                    isLoadingData = false
+                    if (refreshing) viewBinding.swipe.isRefreshing = false
+                    viewBinding.swipe.isEnabled = refreshEnabled
+                    viewBinding.dataRV.loadComplete(error = false, hasMore = hasMore)
+                    if (data.isNotEmpty()) currPage += 1
+                    if (refreshing) {
+                        listAdapter.setData(data)
+                        if (data.isNotEmpty()) {
+                            viewBinding.dataRV.scrollToPosition(0)
+                        }
+                    } else {
+                        listAdapter.addData(data)
                     }
-                } else {
-                    listAdapter.addData(data)
                 }
-            }
 
-            override fun onFail(code: Int, msg: String?) {
-                viewBinding.swipe.isEnabled = refreshEnabled
-                if (refreshing) viewBinding.swipe.isRefreshing = false
-                viewBinding.swipe.isRefreshing = false
-                viewBinding.dataRV.loadComplete(error = true, hasMore = true)
-                onError(code, msg)
-            }
-        })
+                override fun onFail(code: Int, msg: String?) {
+                    isLoadingData = false
+                    viewBinding.swipe.isEnabled = refreshEnabled
+                    if (refreshing) viewBinding.swipe.isRefreshing = false
+                    viewBinding.swipe.isRefreshing = false
+                    viewBinding.dataRV.loadComplete(error = true, hasMore = true)
+                    onError(code, msg)
+                }
+            })
+            return
+        }
     }
 
     abstract fun onLoad(page: Int, callback: LoadDataCallback<Item>)
