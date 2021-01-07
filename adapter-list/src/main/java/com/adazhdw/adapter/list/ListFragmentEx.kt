@@ -68,9 +68,11 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
             isLoadingData = true
             if (refreshing) {
                 currPage = startAtPage()
+                viewBinding.swipe.isEnabled = true
                 viewBinding.dataRV.setLoadMoreEnabled(false)
             } else {
                 viewBinding.swipe.isEnabled = false
+                viewBinding.swipe.isRefreshing = false
                 viewBinding.dataRV.setLoadMoreEnabled(true)
             }
             onLoad(currPage, object : LoadDataCallback<Item> {
@@ -92,14 +94,12 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
 
                 override fun onFail(code: Int, msg: String?) {
                     isLoadingData = false
-                    viewBinding.swipe.isEnabled = refreshEnabled
                     if (refreshing) viewBinding.swipe.isRefreshing = false
-                    viewBinding.swipe.isRefreshing = false
+                    viewBinding.swipe.isEnabled = refreshEnabled
                     viewBinding.dataRV.loadComplete(error = true, hasMore = true)
                     onError(code, msg)
                 }
             })
-            return
         }
     }
 

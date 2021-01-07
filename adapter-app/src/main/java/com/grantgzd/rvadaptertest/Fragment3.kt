@@ -35,8 +35,6 @@ class Fragment3 : ViewBindingFragment() {
 
 class ListExampleFragment3 : ListFragmentEx<DefaultItem<HomeModel>>() {
 
-    override var refreshEnabled: Boolean = true
-
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onLoad(page: Int, callback: LoadDataCallback<DefaultItem<HomeModel>>) {
