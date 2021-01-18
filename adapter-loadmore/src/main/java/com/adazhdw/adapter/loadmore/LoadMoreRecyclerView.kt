@@ -2,7 +2,9 @@ package com.adazhdw.adapter.loadmore
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.MotionEvent
 import androidx.annotation.IntDef
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,8 +39,111 @@ open class LoadMoreRecyclerView : RecyclerView {
     private var loadMoreAvailable = false//总开关，控制整体loadMore是否可用
     private var loadMoreEnabled = false//开关，控制ListFragment内loadMore是否可用,为了防止刷新和加载更多同时进行
     private var hasMore = true//是否有更多数据
+    private var fingerDirectionEnabled = false//是否启用手指滑动方向判断
     private var mLoadMoreListener: LoadMoreListener? = null
     private var mScrollDirection: Int = SCROLL_DIRECTION_BOTTOM
+
+    private var initialTouchX = 0
+    private var initialTouchY = 0
+    private var lastTouchX = 0
+    private var lastTouchY = 0
+    private var scrollPointerId = -1
+    private val scrollOffset = IntArray(2)
+    private val reusableIntPair = IntArray(2)
+    protected var fingerUp = false
+    protected var fingerLeft = false
+    override fun onTouchEvent(e: MotionEvent?): Boolean {
+        if (e == null) return super.onTouchEvent(e)
+        if (fingerDirectionEnabled) {
+            //使用RecyclerView部分源码来判断手指滑动方向
+            val canScrollHorizontally = layoutManager?.canScrollHorizontally() ?: false
+            val canScrollVertically = layoutManager?.canScrollVertically() ?: false
+            val action = e.actionMasked
+            val actionIndex = e.actionIndex
+            when (action) {
+                MotionEvent.ACTION_DOWN -> {
+                    scrollPointerId = e.getPointerId(0)
+                    initialTouchX = (e.x + 0.5f).toInt().also { lastTouchX = it }
+                    initialTouchY = (e.y + 0.5f).toInt().also { lastTouchY = it }
+                }
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    scrollPointerId = e.getPointerId(actionIndex)
+                    initialTouchX = (e.getX(actionIndex) + 0.5f).toInt().also { lastTouchX = it }
+                    initialTouchY = (e.getY(actionIndex) + 0.5f).toInt().also { lastTouchY = it }
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val index = e.findPointerIndex(scrollPointerId)
+                    if (index < 0) return false
+
+                    val x = (e.getX(index) + 0.5f).toInt()
+                    val y = (e.getY(index) + 0.5f).toInt()
+                    var dx = lastTouchX - x
+                    var dy = lastTouchY - y
+                    if (mLMScrollState != SCROLL_STATE_DRAGGING) {
+                        var startScroll = false
+                        if (canScrollHorizontally) {
+                            dx = if (dx > 0) {
+                                Math.max(0, dx)
+                            } else {
+                                Math.min(0, dx)
+                            }
+                            if (dx != 0) {
+                                startScroll = true
+                            }
+                        }
+                        if (canScrollVertically) {
+                            dy = if (dy > 0) {
+                                Math.max(0, dy)
+                            } else {
+                                Math.min(0, dy)
+                            }
+                            if (dy != 0) {
+                                startScroll = true
+                            }
+                        }
+                        if (startScroll) {
+                            mLMScrollState = SCROLL_STATE_DRAGGING
+                        }
+                    }
+                    if (mLMScrollState == SCROLL_STATE_DRAGGING) {
+                        reusableIntPair[0] = 0
+                        reusableIntPair[1] = 0
+                        if (dispatchNestedPreScroll(
+                                if (canScrollHorizontally) dx else 0, if (canScrollVertically) dy else 0,
+                                reusableIntPair, scrollOffset, ViewCompat.TYPE_TOUCH
+                            )
+                        ) {
+                            dx -= reusableIntPair[0]
+                            dy -= reusableIntPair[1]
+                            // Scroll has initiated, prevent parents from intercepting
+                            parent.requestDisallowInterceptTouchEvent(true)
+                        }
+                        lastTouchX = x - scrollOffset[0]
+                        lastTouchY = y - scrollOffset[1]
+                    }
+                    fingerUp = dy > 0
+                    fingerLeft = dx > 0
+                }
+                MotionEvent.ACTION_POINTER_UP -> {
+                    onPointerUp(e)
+                }
+            }
+        }
+        return super.onTouchEvent(e)
+    }
+
+    private fun onPointerUp(e: MotionEvent) {
+        val actionIndex = e.actionIndex
+        if (e.getPointerId(actionIndex) == scrollPointerId) {
+            // Pick a new pointer to pick up the slack.
+            val newIndex = if (actionIndex == 0) 1 else 0
+            scrollPointerId = e.getPointerId(newIndex)
+            lastTouchX = (e.getX(newIndex) + 0.5f).toInt()
+            initialTouchX = lastTouchX
+            lastTouchY = (e.getY(newIndex) + 0.5f).toInt()
+            initialTouchY = lastTouchY
+        }
+    }
 
     private var mLMScrollState = SCROLL_STATE_IDLE
     override fun onScrollStateChanged(state: Int) {
@@ -90,9 +195,9 @@ open class LoadMoreRecyclerView : RecyclerView {
      */
     private fun alreadyTopOrBottom(): Boolean {
         var already = false
-        if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_BOTTOM/* && fingerUp*/) {
+        if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_BOTTOM && (if (fingerDirectionEnabled) fingerUp else true)) {
             already = true
-        } else if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_TOP/* && !fingerUp*/) {
+        } else if (!canScrollVertically(mScrollDirection) && mScrollDirection == SCROLL_DIRECTION_TOP && (if (fingerDirectionEnabled) !fingerUp else true)) {
             already = true
         }
         return already
@@ -110,6 +215,13 @@ open class LoadMoreRecyclerView : RecyclerView {
      */
     fun canScrollDirection(@ScrollDirection direction: Int) {
         this.mScrollDirection = direction
+    }
+
+    /**
+     * 是否启用手指方向判，试验阶段，不建议启用
+     */
+    fun fingerDirectionEnabled(enabled: Boolean) {
+        this.fingerDirectionEnabled = enabled
     }
 
     fun setLoadMoreAvailable(available: Boolean) {

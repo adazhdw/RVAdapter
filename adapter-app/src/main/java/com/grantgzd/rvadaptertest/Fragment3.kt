@@ -40,7 +40,7 @@ class ListExampleFragment3 : ListFragmentEx<DefaultItem<HomeModel>>() {
     override fun onLoad(page: Int, callback: LoadDataCallback<DefaultItem<HomeModel>>) {
         handler.postDelayed({
             val list = mutableListOf<DefaultItem<HomeModel>>().apply {
-                for (i in 0 until 7) {
+                for (i in 0 until 10) {
                     add(homeModel(HomeModel("msg----")))
                 }
             }
