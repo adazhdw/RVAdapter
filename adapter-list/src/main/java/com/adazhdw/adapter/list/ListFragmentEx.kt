@@ -14,8 +14,8 @@ import com.adazhdw.adapter.list.databinding.FragmentListLayoutRvexBinding
 import com.adazhdw.adapter.list.decoration.LinearSpacingItemDecoration
 import com.adazhdw.adapter.list.ext.startRefresh
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
+import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView.Companion.SCROLL_DIRECTION_BOTTOM
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
-import com.adazhdw.adapter.loadmore.SCROLL_DIRECTION_BOTTOM
 
 /**
  * FileName: ListFragment
