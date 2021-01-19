@@ -15,7 +15,6 @@ import com.adazhdw.adapter.list.decoration.LinearSpacingItemDecoration
 import com.adazhdw.adapter.list.ext.startRefresh
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView.Companion.SCROLL_DIRECTION_BOTTOM
-import com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
 
 /**
  * FileName: ListFragment
@@ -110,7 +109,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
     open fun startAtPage() = 0/*开始页数*/
     open fun perPage() = 20/*每页个数pageSize*/
     open fun onError(code: Int, msg: String?) {}
-    open fun rvExtra(recyclerView: LoadMoreRecyclerViewEx) {}/*recyclerView其他属性设置*/
+    open fun rvExtra(recyclerView: LoadMoreRecyclerView) {}/*recyclerView其他属性设置*/
     open fun getLayoutManager(): RecyclerView.LayoutManager {
         return LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }

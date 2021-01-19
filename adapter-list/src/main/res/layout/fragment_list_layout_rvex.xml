@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.adazhdw.adapter.loadmore.LoadMoreRecyclerViewEx
+    <com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
         android:id="@+id/dataRV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

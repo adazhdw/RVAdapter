@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.adazhdw.adapter.core.IItem
 
 /**
  * FileName: LoadMoreRecyclerView
@@ -203,10 +204,20 @@ open class LoadMoreRecyclerView : RecyclerView {
         return already
     }
 
+    private var loadMoreAdapterEx: LoadMoreAdapter? = null
+    private var loadMoreItem: IItem<LoadMoreState, ViewHolder> = LoadMoreItemDefault()
+
     open fun loadComplete(error: Boolean = false, hasMore: Boolean = true) {
         this.isLoading = false
         this.loadMoreEnabled = true
         this.hasMore = hasMore
+        this.loadMoreAdapterEx?.loadComplete(error, hasMore)
+    }
+
+    override fun setAdapter(adapter: Adapter<ViewHolder>?) {
+        if (adapter == null) return
+        loadMoreAdapterEx = LoadMoreAdapter(adapter, loadMoreItem)
+        super.setAdapter(loadMoreAdapterEx)
     }
 
     /**
