@@ -18,19 +18,12 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class AbsItem<M : Any, VH : RecyclerView.ViewHolder> : IItem<M, VH> {
 
     override var data: M? = null
-    private var initViewHolder: ViewHolderType? = null
-
-    open fun onGetViewHolder(type: ViewHolderType) {
-        initViewHolder = type
-    }
 
     /**
      * This method returns the ViewHolder for our item, using the provided parent and layoutInflater.
      */
     override fun getViewHolder(parent: ViewGroup, layoutInflater: LayoutInflater): VH {
-        return getViewHolder(getItemView(parent, layoutInflater)).apply {
-            if (this is DefaultViewHolder) initViewHolder?.invoke(this)
-        }
+        return getViewHolder(getItemView(parent, layoutInflater))
     }
 
     /**
@@ -42,6 +35,7 @@ abstract class AbsItem<M : Any, VH : RecyclerView.ViewHolder> : IItem<M, VH> {
      * This method returns the ViewHolder for our item, using the provided View.
      */
     abstract fun getViewHolder(view: View): VH
+
 
     override fun bindVH(holder: VH, payloads: List<Any>) {
 
@@ -65,12 +59,18 @@ abstract class AbsItem<M : Any, VH : RecyclerView.ViewHolder> : IItem<M, VH> {
  */
 open class DefaultItem<M : Any>(@LayoutRes override val layoutRes: Int) : AbsItem<M, DefaultViewHolder>() {
 
+    private var initViewHolder: ViewHolderType? = null
+
+    open fun onGetViewHolder(type: ViewHolderType) {
+        initViewHolder = type
+    }
+
     override fun getItemView(parent: ViewGroup, layoutInflater: LayoutInflater): View {
         return layoutInflater.inflate(layoutRes, parent, false)
     }
 
     override fun getViewHolder(view: View): DefaultViewHolder {
-        return DefaultViewHolder(view)
+        return DefaultViewHolder(view).apply { initViewHolder?.invoke(this) }
     }
 }
 
