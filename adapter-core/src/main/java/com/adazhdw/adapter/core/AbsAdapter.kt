@@ -19,7 +19,7 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
     protected var recyclerView: RecyclerView? = null
 
     /**Sets an item factory cache to this fast adapter instance.*/
-    open var itemVHFactoryCache: ItemVHFactoryCache<IItemVHFactory<*>> = DefaultItemVHFactoryCache()
+    open var itemVHFactoryCache: ItemVHFactoryCache<GenericItemVHFactory> = DefaultItemVHFactoryCache()
 
     /**Sets an LayoutInflater Cache cache to this fast adapter instance.*/
     private val layoutInflaterCache: SparseArray<WeakReference<LayoutInflater>> = SparseArray()
@@ -30,12 +30,12 @@ abstract class AbsAdapter<Item : GenericItem> : RecyclerView.Adapter<RecyclerVie
     abstract fun getItem(position: Int): Item?
 
     /**Register a new type factory into the itemVHFactoryCache to be able to efficiently create thew ViewHolders*/
-    fun registerItemFactory(type: Int, itemVHF: IItemVHFactory<*>) {
+    fun registerItemFactory(type: Int, itemVHF: GenericItemVHFactory) {
         this.itemVHFactoryCache.register(type, itemVHF)
     }
 
     /**Gets the IItemVHFactory remembered within the BaseAdapter for an item*/
-    fun getItemVHFactory(type: Int): IItemVHFactory<*> = this.itemVHFactoryCache[type]
+    fun getItemVHFactory(type: Int): GenericItemVHFactory = this.itemVHFactoryCache[type]
 
     /**Clears the internal mapper - be sure, to remap everything before going on*/
     fun clearItemVHFactoryCache() {
