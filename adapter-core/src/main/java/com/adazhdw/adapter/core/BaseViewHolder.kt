@@ -1,5 +1,6 @@
 package com.adazhdw.adapter.core
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.SparseArray
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
  **/
 open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+    protected val mContext: Context = itemView.context
     private val views: SparseArray<View> = SparseArray()
 
     fun <T : View> getView(@IdRes viewId: Int): T {
@@ -76,7 +78,10 @@ open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         return this
     }
 
-    open fun setBackgroundResource(@IdRes viewId: Int, @DrawableRes backgroundRes: Int): BaseViewHolder {
+    open fun setBackgroundResource(
+        @IdRes viewId: Int,
+        @DrawableRes backgroundRes: Int
+    ): BaseViewHolder {
         getView<View>(viewId).setBackgroundResource(backgroundRes)
         return this
     }
@@ -90,6 +95,24 @@ open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     open fun setGone(@IdRes viewId: Int, isGone: Boolean): BaseViewHolder {
         val view = getView<View>(viewId)
         view.visibility = if (isGone) View.GONE else View.VISIBLE
+        return this
+    }
+
+    open fun setVisible(@IdRes viewId: Int): BaseViewHolder {
+        val view = getView<View>(viewId)
+        view.visibility = View.VISIBLE
+        return this
+    }
+
+    open fun setInvisible(@IdRes viewId: Int): BaseViewHolder {
+        val view = getView<View>(viewId)
+        view.visibility = View.INVISIBLE
+        return this
+    }
+
+    open fun setGone(@IdRes viewId: Int): BaseViewHolder {
+        val view = getView<View>(viewId)
+        view.visibility = View.GONE
         return this
     }
 
