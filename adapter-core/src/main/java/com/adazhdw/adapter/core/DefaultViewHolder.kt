@@ -32,19 +32,23 @@ open class DefaultViewHolder(itemView: View) : BaseViewHolder(itemView), VHSubsc
     }
 
     override fun onBindViewHolder(position: Int, payloads: List<Any>) {
-        this.bindView?.invoke(this, payloads)
+        this.bindView?.invoke(this, position, payloads)
     }
 
     override fun unBindViewHolder(position: Int) {
-        this.unBindType?.invoke(this)
+        this.unBindType?.invoke(this, position)
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder, position: Int) {
-        this.attachType?.invoke(holder as DefaultViewHolder)
+        this.attachType?.invoke(holder as DefaultViewHolder, position)
     }
 
     override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder, position: Int) {
-        this.detachType?.invoke(holder as DefaultViewHolder)
+        this.detachType?.invoke(holder as DefaultViewHolder, position)
+    }
+
+    fun bindAvailable(position: Int): Boolean {
+        return position >= 0
     }
 }
 

@@ -28,8 +28,8 @@ inline fun <reified M : Any> RecyclerView.ViewHolder.getItemData(): M? {
     return (itemView.getTag(R.id.adapter_item) as? IItem<M, *>)?.data
 }
 
-typealias ViewHolderType = DefaultViewHolder.() -> Unit
+typealias ViewHolderType = DefaultViewHolder.(position: Int) -> Unit
 
-typealias ViewHolderBindView = DefaultViewHolder.(payloads: List<Any>) -> Unit
+typealias ViewHolderBindView = DefaultViewHolder.(position: Int, payloads: List<Any>) -> Unit
 
 

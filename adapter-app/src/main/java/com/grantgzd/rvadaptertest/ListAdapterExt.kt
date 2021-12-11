@@ -19,21 +19,25 @@ data class HomeModel(val msg: String)
 fun homeModel(model: HomeModel) =
     defaultItem(R.layout.item_home_model, model, {
         val text = getView<TextView>(R.id.tv)
-        onBindViewHolder {
-            val data = getItemData<HomeModel>()
-            text.text = (data?.msg + adapterPosition)
-            itemView.setOnClickListener {
-                Toast.makeText(it.context, text.text.toString(), Toast.LENGTH_SHORT).show()
+        onBindViewHolder { position, _ ->
+            if (bindAvailable(position)) {
+                val data = getItemData<HomeModel>()
+                text.text = (data?.msg + position)
+                itemView.setOnClickListener {
+                    Toast.makeText(it.context, text.text.toString(), Toast.LENGTH_SHORT).show()
+                }
             }
         }
     })
 
 fun homeBindModel(model: HomeModel) =
     defaultBindingItem(R.layout.item_home_model_binding, model, {
-        onBindViewHolder {
-            val binding = this.getDataBinding<ItemHomeModelBindingBinding>()
-            val data = getItemData<HomeModel>()
-            binding.tv.text = (data?.msg + adapterPosition)
+        onBindViewHolder { position, _ ->
+            if (bindAvailable(position)) {
+                val binding = this.getDataBinding<ItemHomeModelBindingBinding>()
+                val data = getItemData<HomeModel>()
+                binding.tv.text = (data?.msg + position)
+            }
         }
     })
 
