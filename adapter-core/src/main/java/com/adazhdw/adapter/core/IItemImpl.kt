@@ -59,9 +59,9 @@ abstract class AbsItem<M : Any, VH : RecyclerView.ViewHolder> : IItem<M, VH> {
  */
 open class DefaultItem<M : Any>(@LayoutRes override val layoutRes: Int) : AbsItem<M, DefaultViewHolder>() {
 
-    private var initViewHolder: ViewHolderType? = null
+    private var initViewHolder: ViewHolderGetView? = null
 
-    open fun onGetViewHolder(type: ViewHolderType) {
+    open fun onGetViewHolder(type: ViewHolderGetView) {
         initViewHolder = type
     }
 

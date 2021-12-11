@@ -30,6 +30,8 @@ inline fun <reified M : Any> RecyclerView.ViewHolder.getItemData(): M? {
 
 typealias ViewHolderType = DefaultViewHolder.(position: Int) -> Unit
 
+typealias ViewHolderGetView = DefaultViewHolder.() -> Unit
+
 typealias ViewHolderBindView = DefaultViewHolder.(position: Int, payloads: List<Any>) -> Unit
 
 
