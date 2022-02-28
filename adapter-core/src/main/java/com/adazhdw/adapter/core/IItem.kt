@@ -11,7 +11,7 @@ typealias GenericItem = IItem<*, out RecyclerView.ViewHolder>
 /**
  * Created by mikepenz on 03.02.15.
  */
-interface IItem<M:Any, VH : RecyclerView.ViewHolder> : IItemVHFactory<VH> {
+interface IItem<M : Any, VH : RecyclerView.ViewHolder> : IItemVHFactory<VH> {
 
     /** the item data Model*/
     var data: M?

@@ -78,10 +78,7 @@ open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         return this
     }
 
-    open fun setBackgroundResource(
-        @IdRes viewId: Int,
-        @DrawableRes backgroundRes: Int
-    ): BaseViewHolder {
+    open fun setBackgroundResource(@IdRes viewId: Int, @DrawableRes backgroundRes: Int): BaseViewHolder {
         getView<View>(viewId).setBackgroundResource(backgroundRes)
         return this
     }
