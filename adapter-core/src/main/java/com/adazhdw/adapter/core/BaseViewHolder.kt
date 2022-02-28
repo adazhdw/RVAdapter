@@ -22,7 +22,7 @@ open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun <T : View> getView(@IdRes viewId: Int): T {
         val view: T? = getViewOrNull(viewId)
-        checkNotNull(view, { "No view found with id:$viewId" })
+        checkNotNull(view) { "No view found with id:$viewId" }
         return view
     }
 

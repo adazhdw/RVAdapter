@@ -48,7 +48,7 @@ open class DefaultViewHolder(itemView: View) : BaseViewHolder(itemView), VHSubsc
     }
 
     fun bindAvailable(position: Int): Boolean {
-        return position >= 0
+        return position != RecyclerView.NO_POSITION
     }
 }
 

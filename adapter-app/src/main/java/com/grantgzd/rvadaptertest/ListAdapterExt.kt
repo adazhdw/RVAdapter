@@ -17,7 +17,7 @@ import com.grantgzd.rvadaptertest.databinding.ItemHomeModelBindingBinding
 data class HomeModel(val msg: String)
 
 fun homeModel(model: HomeModel) =
-    defaultItem(R.layout.item_home_model, model, {
+    defaultItem(R.layout.item_home_model, model) {
         val text = getView<TextView>(R.id.tv)
         onBindViewHolder { position, _ ->
             if (bindAvailable(position)) {
@@ -28,10 +28,10 @@ fun homeModel(model: HomeModel) =
                 }
             }
         }
-    })
+    }
 
 fun homeBindModel(model: HomeModel) =
-    defaultBindingItem(R.layout.item_home_model_binding, model, {
+    defaultBindingItem(R.layout.item_home_model_binding, model) {
         onBindViewHolder { position, _ ->
             if (bindAvailable(position)) {
                 val binding = this.getDataBinding<ItemHomeModelBindingBinding>()
@@ -39,5 +39,5 @@ fun homeBindModel(model: HomeModel) =
                 binding.tv.text = (data?.msg + position)
             }
         }
-    })
+    }
 
