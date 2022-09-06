@@ -5,16 +5,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.adazhdw.adapter.core.GenericItem
 import com.adazhdw.adapter.core.ListAdapter
 import com.adazhdw.adapter.core.bind
-import com.adazhdw.adapter.list.base.ViewBindingFragment
 import com.adazhdw.adapter.list.databinding.FragmentListLayoutRvexBinding
 import com.adazhdw.adapter.list.decoration.LinearSpacingItemDecoration
 import com.adazhdw.adapter.list.ext.startRefresh
+import com.adazhdw.adapter.list.ext.stopRefresh
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView
 import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView.Companion.SCROLL_DIRECTION_BOTTOM
+import com.adazhdw.ktlib.base.fragment.ViewBindingFragment
 
 /**
  * FileName: ListFragment
@@ -22,9 +22,10 @@ import com.adazhdw.adapter.loadmore.LoadMoreRecyclerView.Companion.SCROLL_DIRECT
  * Date: 2020/12/25 10:41
  * Description: 自己封装的 直接使用的 ListFragment，只需要传入 Item
  */
-abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
+abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment<FragmentListLayoutRvexBinding>() {
 
-    private lateinit var viewBinding: FragmentListLayoutRvexBinding
+    override val layoutId: Int
+        get() = R.layout.fragment_list_layout_rvex
     private var currPage = 0
     private var isLoadingData = false
     protected val listAdapter: ListAdapter by lazy { ListAdapter() }
@@ -33,9 +34,8 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
     protected val mData: MutableList<GenericItem>
         get() = listAdapter.getData()
 
-    final override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
-        viewBinding = FragmentListLayoutRvexBinding.inflate(inflater, container, false)
-        return viewBinding
+    override fun inflateViewBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentListLayoutRvexBinding {
+        return FragmentListLayoutRvexBinding.inflate(inflater, container, false)
     }
 
     override fun initView(view: View) {
@@ -71,13 +71,13 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
                 viewBinding.dataRV.setLoadMoreEnabled(false)
             } else {
                 viewBinding.swipe.isEnabled = false
-                viewBinding.swipe.isRefreshing = false
+                viewBinding.swipe.stopRefresh()
                 viewBinding.dataRV.setLoadMoreEnabled(true)
             }
             onLoad(currPage, object : LoadDataCallback<Item> {
                 override fun onSuccess(data: List<Item>, hasMore: Boolean) {
                     isLoadingData = false
-                    if (refreshing) viewBinding.swipe.isRefreshing = false
+                    if (refreshing) viewBinding.swipe.stopRefresh()
                     viewBinding.swipe.isEnabled = refreshEnabled
                     viewBinding.dataRV.loadComplete(error = false, hasMore = hasMore)
                     if (data.isNotEmpty()) currPage += 1
@@ -93,7 +93,7 @@ abstract class ListFragmentEx<Item : GenericItem> : ViewBindingFragment() {
 
                 override fun onFail(code: Int, msg: String?) {
                     isLoadingData = false
-                    if (refreshing) viewBinding.swipe.isRefreshing = false
+                    if (refreshing) viewBinding.swipe.stopRefresh()
                     viewBinding.swipe.isEnabled = refreshEnabled
                     viewBinding.dataRV.loadComplete(error = true, hasMore = true)
                     onError(code, msg)

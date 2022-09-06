@@ -1,12 +1,11 @@
 package com.grantgzd.rvadaptertest
 
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import com.adazhdw.adapter.binding.defaultBindingItem
-import com.adazhdw.adapter.binding.getDataBinding
-import com.adazhdw.adapter.core.defaultItem
+import com.adazhdw.adapter.core.AbsItem
+import com.adazhdw.adapter.core.ViewHolder
 import com.adazhdw.adapter.core.getItemData
-import com.grantgzd.rvadaptertest.databinding.ItemHomeModelBindingBinding
 
 /**
  * author：daguozhu
@@ -16,28 +15,23 @@ import com.grantgzd.rvadaptertest.databinding.ItemHomeModelBindingBinding
 
 data class HomeModel(val msg: String)
 
-fun homeModel(model: HomeModel) =
-    defaultItem(R.layout.item_home_model, model) {
-        val text = getView<TextView>(R.id.tv)
-        onBindViewHolder { position, _ ->
-            if (bindAvailable(position)) {
-                val data = getItemData<HomeModel>()
-                text.text = (data?.msg + position)
-                itemView.setOnClickListener {
-                    Toast.makeText(it.context, text.text.toString(), Toast.LENGTH_SHORT).show()
-                }
+class HomeItem(override var data: HomeModel?) : AbsItem<HomeModel, HomeItem.HomeVH>() {
+    override val layoutRes: Int
+        get() = R.layout.item_home_model
+
+    override fun getViewHolder(view: View): HomeVH {
+        return HomeVH(view)
+    }
+
+    class HomeVH(itemView: View) : ViewHolder(itemView) {
+        private val text = getView<TextView>(R.id.tv)
+        override fun onBindViewHolder(position: Int, payloads: List<Any>) {
+            val data = getItemData<HomeModel>() ?: return
+            text.text = "${data.msg + position}"
+            itemView.setOnClickListener {
+                Toast.makeText(it.context, text.text.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-fun homeBindModel(model: HomeModel) =
-    defaultBindingItem(R.layout.item_home_model_binding, model) {
-        onBindViewHolder { position, _ ->
-            if (bindAvailable(position)) {
-                val binding = this.getDataBinding<ItemHomeModelBindingBinding>()
-                val data = getItemData<HomeModel>()
-                binding.tv.text = (data?.msg + position)
-            }
-        }
-    }
-
+}

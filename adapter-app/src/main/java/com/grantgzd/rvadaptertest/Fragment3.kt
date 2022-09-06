@@ -5,10 +5,8 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.viewbinding.ViewBinding
-import com.adazhdw.adapter.core.DefaultItem
 import com.adazhdw.adapter.list.ListFragmentEx
-import com.adazhdw.adapter.list.base.ViewBindingFragment
+import com.adazhdw.ktlib.base.fragment.ViewBindingFragment
 import com.grantgzd.rvadaptertest.databinding.LayoutViewPagerItem2Binding
 
 /**
@@ -18,30 +16,28 @@ import com.grantgzd.rvadaptertest.databinding.LayoutViewPagerItem2Binding
  * Description:
  * History:
  */
-class Fragment3 : ViewBindingFragment() {
+class Fragment3 : ViewBindingFragment<LayoutViewPagerItem2Binding>() {
 
-    private lateinit var pagerItem1Binding: LayoutViewPagerItem2Binding
-    override fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
-        pagerItem1Binding = LayoutViewPagerItem2Binding.inflate(inflater, container, false)
-        return pagerItem1Binding
+    override fun inflateViewBinding(inflater: LayoutInflater, container: ViewGroup?): LayoutViewPagerItem2Binding {
+        return LayoutViewPagerItem2Binding.inflate(inflater, container, false)
     }
 
     override fun initView(view: View) {
         val listFragment = ListExampleFragment3()
-        pagerItem1Binding.refresh.setOnClickListener { listFragment.refresh() }
+        viewBinding.refresh.setOnClickListener { listFragment.refresh() }
         childFragmentManager.beginTransaction().add(R.id.container, listFragment).commit()
     }
 }
 
-class ListExampleFragment3 : ListFragmentEx<DefaultItem<HomeModel>>() {
+class ListExampleFragment3 : ListFragmentEx<HomeItem>() {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun onLoad(page: Int, callback: LoadDataCallback<DefaultItem<HomeModel>>) {
+    override fun onLoad(page: Int, callback: LoadDataCallback<HomeItem>) {
         handler.postDelayed({
-            val list = mutableListOf<DefaultItem<HomeModel>>().apply {
+            val list = mutableListOf<HomeItem>().apply {
                 for (i in 0 until 10) {
-                    add(homeModel(HomeModel("msg----")))
+                    add(HomeItem(HomeModel("msg----")))
                 }
             }
             callback.onSuccess(list, if (isRefreshing) true else mData.size + list.size < 20)

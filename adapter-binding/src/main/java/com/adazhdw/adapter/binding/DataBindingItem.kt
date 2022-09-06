@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.adazhdw.adapter.core.DefaultItem
-import com.adazhdw.adapter.core.DefaultViewHolder
+import com.adazhdw.adapter.core.AbsItem
+import com.adazhdw.adapter.core.ViewHolder
 
 /**
  * author：adazhdw
@@ -14,7 +14,7 @@ import com.adazhdw.adapter.core.DefaultViewHolder
  * description：
  **/
 
-class DataBindingItem<M : Any>(override val layoutRes: Int) : DefaultItem<M>(layoutRes) {
+abstract class DataBindingItem<M : Any>(override val layoutRes: Int) : AbsItem<M, ViewHolder>() {
     override fun getItemView(parent: ViewGroup, layoutInflater: LayoutInflater): View {
         val binding = DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, layoutRes, parent, false)
         val view = binding.root
@@ -22,14 +22,13 @@ class DataBindingItem<M : Any>(override val layoutRes: Int) : DefaultItem<M>(lay
         return view
     }
 
-    override fun bindVH(holder: DefaultViewHolder, payloads: List<Any>) {
+    override fun bindVH(holder: ViewHolder, payloads: List<Any>) {
         holder.getDataBinding<ViewDataBinding>().executePendingBindings()
     }
 
-    override fun unbindVH(holder: DefaultViewHolder) {
+    override fun unbindVH(holder: ViewHolder) {
         holder.getDataBinding<ViewDataBinding>().unbind()
     }
-
 }
 
 

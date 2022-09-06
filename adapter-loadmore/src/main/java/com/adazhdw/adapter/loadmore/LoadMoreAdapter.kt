@@ -11,12 +11,12 @@ import com.adazhdw.adapter.loadmore.wrapper.WrapperAdapter
  **/
 class LoadMoreAdapter(
     adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-    private val loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItemDefault(),
+    private val loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItem(),
     override var needLoadMore: Boolean = true
-) : WrapperAdapter<LoadMoreItemDefault, RecyclerView.ViewHolder>(adapter), ILoadMore {
+) : WrapperAdapter<LoadMoreItem, RecyclerView.ViewHolder>(adapter), ILoadMore {
 
     init {
-        if (needLoadMore) insertItems = listOf(loadMoreItem as LoadMoreItemDefault)
+        if (needLoadMore) insertItems = listOf(loadMoreItem as LoadMoreItem)
     }
 
     override fun getItemCount(): Int {

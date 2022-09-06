@@ -205,7 +205,7 @@ open class LoadMoreRecyclerView : RecyclerView {
     }
 
     private var loadMoreAdapterEx: LoadMoreAdapter? = null
-    private var loadMoreItem: IItem<LoadMoreState, ViewHolder> = LoadMoreItemDefault()
+    private var loadMoreItem: IItem<LoadMoreState, ViewHolder> = LoadMoreItem()
 
     open fun loadComplete(error: Boolean = false, hasMore: Boolean = true) {
         this.isLoading = false

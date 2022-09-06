@@ -7,7 +7,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.adazhdw.adapter.core.AbsItem
-import com.adazhdw.adapter.core.DefaultViewHolder
+import com.adazhdw.adapter.core.ViewHolder
 
 /**
  * author：adazhdw
@@ -15,8 +15,7 @@ import com.adazhdw.adapter.core.DefaultViewHolder
  * description：默认的 加载更多item实现
  **/
 
-class LoadMoreItemDefault(override val layoutRes: Int = R.layout.adapter_item_load_more_layout) :
-    AbsItem<LoadMoreState, RecyclerView.ViewHolder>() {
+class LoadMoreItem(override val layoutRes: Int = R.layout.adapter_item_load_more_layout) : AbsItem<LoadMoreState, RecyclerView.ViewHolder>() {
     init {
         data = LoadMoreState.Loaded
     }
@@ -26,11 +25,11 @@ class LoadMoreItemDefault(override val layoutRes: Int = R.layout.adapter_item_lo
     }
 
     override fun getViewHolder(view: View): RecyclerView.ViewHolder {
-        return DefaultViewHolder(view)
+        return ViewHolder(view)
     }
 
     override fun bindVH(holder: RecyclerView.ViewHolder, payloads: List<Any>) {
-        if (holder is DefaultViewHolder) {
+        if (holder is ViewHolder) {
             val text = holder.getView<TextView>(R.id.loadTv)
             val progress = holder.getView<ProgressBar>(R.id.progress)
             when (data) {

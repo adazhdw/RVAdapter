@@ -1,7 +1,6 @@
 package com.adazhdw.adapter.loadmore
 
 import androidx.recyclerview.widget.RecyclerView
-import com.adazhdw.adapter.core.DefaultViewHolder
 import com.adazhdw.adapter.core.IItem
 
 /**
@@ -14,6 +13,6 @@ import com.adazhdw.adapter.core.IItem
 
 fun loadMoreAdapter(
     adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-    loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItemDefault(),
+    loadMoreItem: IItem<LoadMoreState, RecyclerView.ViewHolder> = LoadMoreItem(),
     loadMoreEnabled: Boolean = true
 ) = LoadMoreAdapter(adapter, loadMoreItem, loadMoreEnabled)
